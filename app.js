@@ -1,16 +1,17 @@
 const express = require('express')
+const config = require('config')
 const path = require('path')
-const {v4} = require('uuid')
+
 const app = express()
 
-app.use(express.json())
+const PORT = config.get('port') || 5900
+app.use(express.json({ extended: true }))
 
-
-
-app.use(express.static(path.resolve(__dirname, 'client')))
+app.use('/', express.static(path.join(__dirname, 'client/dist')))
 
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'index.html'))
+    res.sendFile(path.resolve(__dirname, 'client/dist', 'index.html'))
 })
 
-app.listen(5900, () => console.log('Server has been started on port 5900...'))
+app.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+
