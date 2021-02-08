@@ -34,7 +34,19 @@
       </md-app-drawer>
 
       <md-app-content>
-        <p>Content view: {{currentView}}</p>
+<!--        <p>Content view: {{currentView}}</p>-->
+        <div v-if="currentView === 'dashboard'">
+          <dashboard-view></dashboard-view>
+        </div>
+        <div v-else-if="currentView === 'games'">
+          <games-view></games-view>
+        </div>
+        <div v-else-if="currentView === 'teams'">
+          <teams-view></teams-view>
+        </div>
+        <div v-else-if="currentView === 'players'">
+          <players-view></players-view>
+        </div>
       </md-app-content>
     </md-app>
   </div>
@@ -42,6 +54,7 @@
 
 <style lang="scss" scoped>
 .md-app {
+  height: 100vh;
   border: 1px solid rgba(#000, .12);
 }
 
@@ -52,8 +65,13 @@
 </style>
 
 <script>
+import DashboardView from "@/components/dashboard";
+import GamesView from "@/components/games";
+import TeamsView from "@/components/teams";
+import PlayersView from "@/components/players";
 export default {
-  name: 'Dashboard',
+  name: 'App',
+  components: {PlayersView, TeamsView, GamesView, DashboardView},
   data() {
     return {
       currentView: 'dashboard',

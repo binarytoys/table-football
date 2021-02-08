@@ -11,6 +11,10 @@ new Vue({
 
 import Vue from 'vue'
 import App from './App.vue'
+import DashboardView from './components/dashboard'
+import GamesView from './components/games'
+import TeamsView from './components/teams'
+import PlayersView from './components/players'
 
 Vue.config.productionTip = false
 
@@ -22,6 +26,6 @@ Vue.use(VueMaterial)
 
 new Vue({
   el: '#app',
-  components: { App },
+  components: { App, DashboardView, GamesView, TeamsView, PlayersView },
   template: '<App/>',
 })

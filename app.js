@@ -2,6 +2,26 @@ const express = require('express')
 const config = require('config')
 const path = require('path')
 
+
+/*
+let PLAYERS = [
+    {id: v4(), name: ''}
+];
+
+let TEAMS = [
+    {id: v4(), name: '', players:[]}
+];
+
+let GAMES = [
+    {id: v4(), home: '', away: '', goalsHome: [], goalsAway: []}
+];
+
+let GOALS = [
+    {id: v4(), game: '', player: ''}
+];
+*/
+
+
 const app = express()
 
 const PORT = config.get('port') || 5900
