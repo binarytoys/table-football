@@ -1,9 +1,13 @@
 <template>
   <div class="container">
+    <h1 class="md-title" style="padding-left: 16px">TEAMS</h1>
+
     <md-table v-model="teams" md-sort="name" md-sort-order="asc" md-card>
+<!--
       <md-table-toolbar>
         <h1 class="md-title">TEAMS</h1>
       </md-table-toolbar>
+-->
 
       <md-table-row slot="md-table-row" slot-scope="{ item }">
         <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>
@@ -16,7 +20,6 @@
 
 <style lang="scss" scoped>
 .container {
-  padding: 16px;
   display: flex;
   flex-direction: column;
 }
