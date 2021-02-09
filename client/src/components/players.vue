@@ -17,6 +17,8 @@
 <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
         <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
         <md-table-cell md-label="Surname" md-sort-by="surname">{{ item.surname }}</md-table-cell>
+        <md-table-cell md-label="Team" md-sort-by="team">{{ item.team }}</md-table-cell>
+        <md-table-cell md-label="Goals" md-sort-by="goals">{{ item.goals }}</md-table-cell>
       </md-table-row>
     </md-table>
   </div>
@@ -51,41 +53,49 @@ export default {
           id: 1,
           name: 'Thomas',
           surname: 'Partey',
+          team: 'Bern'
         },
         {
           id: 2,
           name: 'Robert',
           surname: 'Lewandovski',
+          team: 'Bern'
         },
         {
           id: 3,
           name: 'Lionel',
           surname: 'Messi',
+          team: 'Zurich'
         },
         {
           id: 4,
           name: 'Cristiano',
           surname: 'Ronaldo',
+          team: 'Geneva'
         },
         {
           id: 5,
           name: 'Kylian',
           surname: 'Lottin',
+          team: 'Basel'
         },
         {
           id: 6,
           name: 'Bruno',
           surname: 'Fernandes',
+          team: 'Luzern'
         },
         {
           id: 7,
           name: 'Erlin',
           surname: 'Haaland',
+          team: 'Chur'
         },
         {
           id: 8,
           name: 'Ciro',
           surname: 'Immobile',
+          team: 'Geneva'
         },
       ],
     }
