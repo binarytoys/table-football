@@ -33,20 +33,20 @@
         </md-list>
       </md-app-drawer>
 
-      <md-app-content>
+      <md-app-content style="height: 100%">
 <!--        <p>Content view: {{currentView}}</p>-->
-        <div v-if="currentView === 'dashboard'">
+        <template v-if="currentView === 'dashboard'">
           <dashboard-view></dashboard-view>
-        </div>
-        <div v-else-if="currentView === 'games'">
+        </template>
+        <template v-else-if="currentView === 'games'">
           <games-view></games-view>
-        </div>
-        <div v-else-if="currentView === 'teams'">
+        </template>
+        <template v-else-if="currentView === 'teams'">
           <teams-view></teams-view>
-        </div>
-        <div v-else-if="currentView === 'players'">
+        </template>
+        <template v-else-if="currentView === 'players'">
           <players-view></players-view>
-        </div>
+        </template>
       </md-app-content>
     </md-app>
   </div>

@@ -1,51 +1,52 @@
 const DbDriver = require('./dbdriver-base');
+const {v4} = require('uuid');
 
 class DbDriverMemory extends DbDriver {
     PLAYERS = [
         {
-            id: 1,
+            id: v4(),
             name: 'Thomas',
             surname: 'Partey',
             team: 'Bern'
         },
         {
-            id: 2,
+            id: v4(),
             name: 'Robert',
             surname: 'Lewandovski',
             team: 'Bern'
         },
         {
-            id: 3,
+            id: v4(),
             name: 'Lionel',
             surname: 'Messi',
             team: 'Zurich'
         },
         {
-            id: 4,
+            id: v4(),
             name: 'Cristiano',
             surname: 'Ronaldo',
             team: 'Geneva'
         },
         {
-            id: 5,
+            id: v4(),
             name: 'Kylian',
             surname: 'Lottin',
             team: 'Basel'
         },
         {
-            id: 6,
+            id: v4(),
             name: 'Bruno',
             surname: 'Fernandes',
             team: 'Luzern'
         },
         {
-            id: 7,
+            id: v4(),
             name: 'Erlin',
             surname: 'Haaland',
             team: 'Chur'
         },
         {
-            id: 8,
+            id: v4(),
             name: 'Ciro',
             surname: 'Immobile',
             team: 'Geneva'
@@ -53,59 +54,59 @@ class DbDriverMemory extends DbDriver {
     ];
     TEAMS = [
         {
-            id: 1,
+            id: v4(),
             name: 'Bern'
         },
         {
-            id: 2,
+            id: v4(),
             name: 'Zurich'
         },
         {
-            id: 3,
+            id: v4(),
             name: 'Basel'
         },
         {
-            id: 4,
+            id: v4(),
             name: 'Bern'
         },
         {
-            id: 5,
+            id: v4(),
             name: 'Geneva'
         },
         {
-            id: 6,
+            id: v4(),
             name: 'Friburg'
         },
         {
-            id: 7,
+            id: v4(),
             name: 'Luzern',
         },
         {
-            id: 8,
+            id: v4(),
             name: 'Chur'
         },
     ];
     GAMES = [
         {
-            id: 1,
+            id: v4(),
             home: 'Bern',
             away: 'Zurich',
             result: '3:1'
         },
         {
-            id: 2,
+            id: v4(),
             home: 'Basel',
             away: 'Bern',
             result: '2:3'
         },
         {
-            id: 3,
+            id: v4(),
             home: 'Geneva',
             away: 'Friburg',
             result: '1:0'
         },
         {
-            id: 4,
+            id: v4(),
             home: 'Luzern',
             away: 'Chur',
             result: '1:1'
@@ -113,7 +114,7 @@ class DbDriverMemory extends DbDriver {
     ];
     DASHBOARD = [
         {
-            id: 1,
+            id: v4(),
             name: 'Bern',
             wins: 10,
             loses: 2,
@@ -123,7 +124,7 @@ class DbDriverMemory extends DbDriver {
             diff: 15 - 10
         },
         {
-            id: 2,
+            id: v4(),
             name: 'Zurich',
             wins: 5,
             loses: 7,
@@ -133,7 +134,7 @@ class DbDriverMemory extends DbDriver {
             diff: 8 - 12
         },
         {
-            id: 3,
+            id: v4(),
             name: 'Basel',
             wins: 6,
             loses: 6,
@@ -143,7 +144,7 @@ class DbDriverMemory extends DbDriver {
             diff: 10 - 12
         },
         {
-            id: 4,
+            id: v4(),
             name: 'Geneva',
             wins: 7,
             loses: 6,
@@ -154,10 +155,37 @@ class DbDriverMemory extends DbDriver {
         },
     ];
 
-    getPlayers() {return this.PLAYERS;}
-    getTeams() {return this.TEAMS;}
-    getGames() {return this.GAMES;}
-    getDashboard() {return this.DASHBOARD;}
+    async getPlayers() {
+        return new Promise((resolve => {
+            setTimeout(() => {
+                resolve( this.PLAYERS );
+            }, 1000);
+        }));
+    }
+
+    getTeams() {
+        return new Promise((resolve => {
+            setTimeout(() => {
+                resolve( this.TEAMS );
+            }, 1000);
+        }));
+    }
+
+    getGames() {
+        return new Promise((resolve => {
+            setTimeout(() => {
+                resolve( this.GAMES );
+            }, 1000);
+        }));
+    }
+
+    getDashboard() {
+        return new Promise((resolve => {
+            setTimeout(() => {
+                resolve( this.DASHBOARD );
+            }, 1000);
+        }));
+    }
 }
 
 module.exports = DbDriverMemory;

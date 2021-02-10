@@ -3,23 +3,28 @@
     <div class="header">
       <h1 class="md-title" style="padding-left: 16px">PLAYERS</h1>
     </div>
-    <md-button class="md-fab md-accent top-fab">
-      <md-icon>add</md-icon>
-    </md-button>
-    <md-table v-model="players" md-sort="name" md-sort-order="asc" md-card>
-<!--
-      <md-table-toolbar>
-        <h1 class="md-title">PLAYERS</h1>
-      </md-table-toolbar>
--->
-      <md-table-row slot="md-table-row" slot-scope="{ item }">
-<!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
-        <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
-        <md-table-cell md-label="Surname" md-sort-by="surname">{{ item.surname }}</md-table-cell>
-        <md-table-cell md-label="Team" md-sort-by="team">{{ item.team }}</md-table-cell>
-        <md-table-cell md-label="Goals" md-sort-by="goals">{{ item.goals }}</md-table-cell>
-      </md-table-row>
-    </md-table>
+    <template v-if="loading">
+      <loader style="flex: 1"></loader>
+    </template>
+    <template v-else>
+      <md-button class="md-fab md-accent top-fab">
+        <md-icon>add</md-icon>
+      </md-button>
+      <md-table v-model="players" md-sort="name" md-sort-order="asc" md-card>
+        <!--
+              <md-table-toolbar>
+                <h1 class="md-title">PLAYERS</h1>
+              </md-table-toolbar>
+        -->
+        <md-table-row slot="md-table-row" slot-scope="{ item }">
+          <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
+          <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
+          <md-table-cell md-label="Surname" md-sort-by="surname">{{ item.surname }}</md-table-cell>
+          <md-table-cell md-label="Team" md-sort-by="team">{{ item.team }}</md-table-cell>
+          <md-table-cell md-label="Goals" md-sort-by="goals">{{ item.goals }}</md-table-cell>
+        </md-table-row>
+      </md-table>
+    </template>
   </div>
 </template>
 
@@ -27,6 +32,7 @@
 .container {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .header {
@@ -43,8 +49,10 @@
 </style>
 
 <script>
+import Loader from "@/components/loader";
 export default {
   name: 'PlayersView',
+  components: {Loader},
   data() {
     return {
       loading: false,

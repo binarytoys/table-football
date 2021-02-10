@@ -41,19 +41,31 @@ app.use(allowCrossDomain);
 
 // GET
 app.get('/api/players', (req, res) => {
-    res.status(200).json(dbDriver.getPlayers());
+    (async ()=>{
+        const data = await dbDriver.getPlayers();
+        res.status(200).json(data);
+    })();
 })
 
 app.get('/api/teams', (req, res) => {
-    res.status(200).json(dbDriver.getTeams());
+    (async ()=>{
+        const data = await dbDriver.getTeams();
+        res.status(200).json(data);
+    })();
 })
 
 app.get('/api/games', (req, res) => {
-    res.status(200).json(dbDriver.getGames());
+    (async ()=>{
+        const data = await dbDriver.getGames();
+        res.status(200).json(data);
+    })();
 })
 
 app.get('/api/dashboard', (req, res) => {
-    res.status(200).json(dbDriver.getDashboard());
+    (async ()=>{
+        const data = await dbDriver.getDashboard();
+        res.status(200).json(data);
+    })();
 })
 
 app.use('/', express.static(path.join(__dirname, 'client/dist')))
