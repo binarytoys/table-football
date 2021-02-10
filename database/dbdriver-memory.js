@@ -1,52 +1,52 @@
 const DbDriver = require('./dbdriver-base');
-const {v4} = require('uuid');
+// const {v4} = require('uuid');
 
 class DbDriverMemory extends DbDriver {
     PLAYERS = [
         {
-            id: v4(),
+            id: '1',
             name: 'Thomas',
             surname: 'Partey',
             team: 'Bern'
         },
         {
-            id: v4(),
+            id: '2',
             name: 'Robert',
             surname: 'Lewandovski',
             team: 'Bern'
         },
         {
-            id: v4(),
+            id: '3',
             name: 'Lionel',
             surname: 'Messi',
             team: 'Zurich'
         },
         {
-            id: v4(),
+            id: '4',
             name: 'Cristiano',
             surname: 'Ronaldo',
             team: 'Geneva'
         },
         {
-            id: v4(),
+            id: '5',
             name: 'Kylian',
             surname: 'Lottin',
             team: 'Basel'
         },
         {
-            id: v4(),
+            id: '6',
             name: 'Bruno',
             surname: 'Fernandes',
             team: 'Luzern'
         },
         {
-            id: v4(),
+            id: '7',
             name: 'Erlin',
             surname: 'Haaland',
             team: 'Chur'
         },
         {
-            id: v4(),
+            id: '8',
             name: 'Ciro',
             surname: 'Immobile',
             team: 'Geneva'
@@ -54,59 +54,59 @@ class DbDriverMemory extends DbDriver {
     ];
     TEAMS = [
         {
-            id: v4(),
+            id: '1',
             name: 'Bern'
         },
         {
-            id: v4(),
+            id: '2',
             name: 'Zurich'
         },
         {
-            id: v4(),
+            id: '3',
             name: 'Basel'
         },
         {
-            id: v4(),
+            id: '4',
             name: 'Bern'
         },
         {
-            id: v4(),
+            id: '5',
             name: 'Geneva'
         },
         {
-            id: v4(),
+            id: '6',
             name: 'Friburg'
         },
         {
-            id: v4(),
+            id: '7',
             name: 'Luzern',
         },
         {
-            id: v4(),
+            id: '8',
             name: 'Chur'
         },
     ];
     GAMES = [
         {
-            id: v4(),
+            id: '1',
             home: 'Bern',
             away: 'Zurich',
             result: '3:1'
         },
         {
-            id: v4(),
+            id: '2',
             home: 'Basel',
             away: 'Bern',
             result: '2:3'
         },
         {
-            id: v4(),
+            id: '3',
             home: 'Geneva',
             away: 'Friburg',
             result: '1:0'
         },
         {
-            id: v4(),
+            id: '4',
             home: 'Luzern',
             away: 'Chur',
             result: '1:1'
@@ -114,7 +114,7 @@ class DbDriverMemory extends DbDriver {
     ];
     DASHBOARD = [
         {
-            id: v4(),
+            id: '1',
             name: 'Bern',
             wins: 10,
             loses: 2,
@@ -124,7 +124,7 @@ class DbDriverMemory extends DbDriver {
             diff: 15 - 10
         },
         {
-            id: v4(),
+            id: '2',
             name: 'Zurich',
             wins: 5,
             loses: 7,
@@ -134,7 +134,7 @@ class DbDriverMemory extends DbDriver {
             diff: 8 - 12
         },
         {
-            id: v4(),
+            id: '3',
             name: 'Basel',
             wins: 6,
             loses: 6,
@@ -144,7 +144,7 @@ class DbDriverMemory extends DbDriver {
             diff: 10 - 12
         },
         {
-            id: v4(),
+            id: '4',
             name: 'Geneva',
             wins: 7,
             loses: 6,
@@ -154,6 +154,15 @@ class DbDriverMemory extends DbDriver {
             diff: 14 - 12
         },
     ];
+
+    GOALS = [
+        {
+            id: '1',
+            game: '1',
+            player: '1',
+            team: '1'
+        }
+    ]
 
     async getPlayers() {
         return new Promise((resolve => {

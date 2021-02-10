@@ -10,12 +10,14 @@ new Vue({
 */
 
 import Vue from 'vue'
+import Vuelidate from 'vuelidate'
 import App from './App.vue'
-import DashboardView from './components/dashboard'
-import GamesView from './components/games'
-import TeamsView from './components/teams'
-import PlayersView from './components/players'
-import Loader from './components/loader'
+import DashboardView from './components/dashboard';
+import GamesView from './components/games';
+import TeamsView from './components/teams';
+import PlayersView from './components/players';
+import Loader from './components/loader';
+import AddPlayerDialog from './components/add-player-dlg'
 
 Vue.config.productionTip = false
 
@@ -23,10 +25,11 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 
-Vue.use(VueMaterial)
+Vue.use(VueMaterial);
+Vue.use(Vuelidate);
 
 new Vue({
   el: '#app',
-  components: { App, DashboardView, GamesView, TeamsView, PlayersView, Loader },
+  components: { App, DashboardView, GamesView, TeamsView, PlayersView, Loader, AddPlayerDialog },
   template: '<App/>',
 })

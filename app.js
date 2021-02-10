@@ -39,7 +39,7 @@ let allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 
-// GET
+// GET *******************************
 app.get('/api/players', (req, res) => {
     (async ()=>{
         const data = await dbDriver.getPlayers();
