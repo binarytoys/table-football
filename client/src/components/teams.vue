@@ -47,41 +47,17 @@ export default {
   name: 'TeamsView',
   data() {
     return {
-      teams: [
-        {
-          id: 1,
-          name: 'Bern'
-        },
-        {
-          id: 2,
-          name: 'Zurich'
-        },
-        {
-          id: 3,
-          name: 'Basel'
-        },
-        {
-          id: 4,
-          name: 'Bern'
-        },
-        {
-          id: 5,
-          name: 'Geneva'
-        },
-        {
-          id: 6,
-          name: 'Friburg'
-        },
-        {
-          id: 7,
-          name: 'Luzern',
-        },
-        {
-          id: 8,
-          name: 'Chur'
-        },
-      ],
+      loading: false,
+      teams: [],
     }
+  },
+  inject: ['request'],
+  async mounted() {
+    this.loading = true;
+    const res = await this.request('/api/teams');
+    console.log(res);
+    this.teams = res;
+    this.loading = false;
   }
 }
 </script>

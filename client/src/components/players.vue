@@ -12,7 +12,6 @@
         <h1 class="md-title">PLAYERS</h1>
       </md-table-toolbar>
 -->
-
       <md-table-row slot="md-table-row" slot-scope="{ item }">
 <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
         <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
@@ -48,57 +47,17 @@ export default {
   name: 'PlayersView',
   data() {
     return {
-      players: [
-        {
-          id: 1,
-          name: 'Thomas',
-          surname: 'Partey',
-          team: 'Bern'
-        },
-        {
-          id: 2,
-          name: 'Robert',
-          surname: 'Lewandovski',
-          team: 'Bern'
-        },
-        {
-          id: 3,
-          name: 'Lionel',
-          surname: 'Messi',
-          team: 'Zurich'
-        },
-        {
-          id: 4,
-          name: 'Cristiano',
-          surname: 'Ronaldo',
-          team: 'Geneva'
-        },
-        {
-          id: 5,
-          name: 'Kylian',
-          surname: 'Lottin',
-          team: 'Basel'
-        },
-        {
-          id: 6,
-          name: 'Bruno',
-          surname: 'Fernandes',
-          team: 'Luzern'
-        },
-        {
-          id: 7,
-          name: 'Erlin',
-          surname: 'Haaland',
-          team: 'Chur'
-        },
-        {
-          id: 8,
-          name: 'Ciro',
-          surname: 'Immobile',
-          team: 'Geneva'
-        },
-      ],
+      loading: false,
+      players: [],
     }
+  },
+  inject: ['request'],
+  async mounted() {
+    this.loading = true;
+    const res = await this.request('/api/players');
+    console.log(res);
+    this.players = res;
+    this.loading = false;
   }
 }
 </script>

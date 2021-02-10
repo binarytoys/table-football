@@ -34,49 +34,18 @@ export default {
   name: 'DashboardView',
   data() {
     return {
-      games: [
-        {
-          id: 1,
-          name: 'Bern',
-          wins: 10,
-          loses: 2,
-          ratio: 10 / 2,
-          goals: 15,
-          lose: 10,
-          diff: 15 - 10
-        },
-        {
-          id: 2,
-          name: 'Zurich',
-          wins: 5,
-          loses: 7,
-          ratio: 5 / 7,
-          goals: 8,
-          lose: 12,
-          diff: 8 - 12
-        },
-        {
-          id: 3,
-          name: 'Basel',
-          wins: 6,
-          loses: 6,
-          ratio: 6 / 6,
-          goals: 10,
-          lose: 12,
-          diff: 10 - 12
-        },
-        {
-          id: 4,
-          name: 'Geneva',
-          wins: 7,
-          loses: 6,
-          ratio: 7 / 6,
-          goals: 14,
-          lose: 12,
-          diff: 14 - 12
-        },
-      ],
+      loading: false,
+      games: [],
     }
+  },
+  inject: ['request'],
+  async mounted() {
+    this.loading = true;
+    const res = await this.request('/api/dashboard');
+    console.log(res);
+    this.games = res;
+    this.loading = false;
   }
+
 }
 </script>

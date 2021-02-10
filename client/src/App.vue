@@ -69,6 +69,8 @@ import DashboardView from "@/components/dashboard";
 import GamesView from "@/components/games";
 import TeamsView from "@/components/teams";
 import PlayersView from "@/components/players";
+const  apiRoot = 'http://localhost:5900';
+
 export default {
   name: 'App',
   components: {PlayersView, TeamsView, GamesView, DashboardView},
@@ -77,5 +79,34 @@ export default {
       currentView: 'dashboard',
     }
   },
+  provide: {
+    request: async (url, method = 'GET', data = null) => {
+      try {
+        console.log(`REQUEST ${method} ${url}`);
+        const headers = {};
+        let body;
+
+        if (data) {
+          headers['Content-Type'] = 'application/json'
+          body = JSON.stringify(data)
+        }
+
+        const response = await fetch(apiRoot + url, {
+          method,
+          headers,
+          body
+        })
+        if (response.ok) {
+          return await response.json();
+        } else {
+          return new Promise((resolve) => {resolve([]);});
+        }
+
+      } catch (e) {
+        console.warn('Error:', e.message)
+        return new Promise((resolve) => {resolve([]);});
+      }
+    }
+  }
 }
 </script>

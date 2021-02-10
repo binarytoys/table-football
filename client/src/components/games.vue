@@ -47,33 +47,17 @@ export default {
   name: 'GamesView',
   data() {
     return {
-      games: [
-        {
-          id: 1,
-          home: 'Bern',
-          away: 'Zurich',
-          result: '3:1'
-        },
-        {
-          id: 2,
-          home: 'Basel',
-          away: 'Bern',
-          result: '2:3'
-        },
-        {
-          id: 3,
-          home: 'Geneva',
-          away: 'Friburg',
-          result: '1:0'
-        },
-        {
-          id: 4,
-          home: 'Luzern',
-          away: 'Chur',
-          result: '1:1'
-        }
-      ],
+      loading: false,
+      games: [],
     }
+  },
+  inject: ['request'],
+  async mounted() {
+    this.loading = true;
+    const res = await this.request('/api/games');
+    console.log(res);
+    this.games = res;
+    this.loading = false;
   }
 }
 </script>
