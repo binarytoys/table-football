@@ -92,7 +92,19 @@ app.delete('/api/players/:id', (req, res) => {
     })();
 })
 
-
+// PUT *******************************
+app.put('/api/players', (req, res) => {
+    (async ()=>{
+        console.log(req.body);
+        const player = {...req.body}
+        const data = await dbDriver.updatePlayer(player);
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json(data);
+        }
+    })();
+})
 
 app.use('/', express.static(path.join(__dirname, 'client/dist')))
 

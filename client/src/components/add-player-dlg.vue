@@ -50,10 +50,10 @@ export default {
   inject: ['request'],
   methods : {
     async createPlayer() {
-      const player = {name: this.name, surname: this.surname, team: this.team};
+      const player = {id: this.editPlayer ? this.editPlayer.id : null, name: this.name, surname: this.surname, team: this.team};
 
       console.log(player);
-      const res = await this.request('/api/players', 'POST', player);
+      const res = this.editPlayer ? await this.request('/api/players', 'PUT', player) : await this.request('/api/players', 'POST', player);
 
       if (res && res.error) {
         console.error(`ERROR: ${res.error}`);
