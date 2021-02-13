@@ -8,9 +8,16 @@
     </template>
     <template v-else>
       <template v-if="addDialog">
-        <add-player-dialog :show-dlg="addDialog"></add-player-dialog>
+        <add-player-dialog :show-dlg="addDialog" @refresh="refreshTable"></add-player-dialog>
       </template>
-      <md-button class="md-fab md-accent top-fab" @click="addDialog = true" v-if="!isHistory">
+      <md-dialog-confirm
+          :md-active.sync="deletePlayerCmd"
+          md-title="Delete player"
+          md-content="`Do you want to delete player ${delPlayer.name} ${delPlayer.surname}`"
+          md-confirm-text="Agree"
+          md-cancel-text="Cancel"
+          @md-confirm="onDelete" />
+      <md-button class="md-fab md-accent top-fab" @click="showAddDialog()" v-if="!isHistory">
         <md-icon>add</md-icon>
       </md-button>
       <md-table v-model="players" md-sort="name" md-sort-order="asc" md-card>
@@ -25,6 +32,12 @@
           <md-table-cell md-label="Surname" md-sort-by="surname">{{ item.surname }}</md-table-cell>
           <md-table-cell md-label="Team" md-sort-by="team">{{ item.team }}</md-table-cell>
           <md-table-cell md-label="Goals" md-sort-by="goals">{{ item.goals }}</md-table-cell>
+          <md-table-cell md-label="" style="width: 64px;">
+            <md-button class="md-icon-button" @click="showDelDialog(item)">
+              <md-icon>delete</md-icon>
+              <md-tooltip md-direction="top">Delete {{item.name}} {{item.surname}}</md-tooltip>
+            </md-button>
+          </md-table-cell>
           <md-table-cell md-label="" style="width: 64px;">
             <md-button class="md-icon-button" @click="showHistory(item)">
               <md-icon>history</md-icon>
@@ -89,6 +102,8 @@ export default {
       addDialog: false,
       isHistory: false,
       players: [],
+      delPlayer: null,
+      deletePlayerCmd: false,
       historyFor: {name: '', surname: ''},
       loadingHistory: false,
       historyGames: [{home: 'Bern', away: 'Basel', goals: 1}]
@@ -104,6 +119,37 @@ export default {
         // this.historyGames = await this.request(`/api/players/history/${player.id}`);
         this.loadingHistory = false;
       })();
+    },
+    showAddDialog() {
+      if (this.addDialog) {
+        this.addDialog = false;
+        setTimeout(()=>{this.addDialog = true;}, 100)
+      } else {
+        this.addDialog = true;
+      }
+    },
+    showDelDialog(item) {
+      this.delPlayer = item;
+      if (this.deletePlayerCmd) {
+        this.deletePlayerCmd = false;
+        setTimeout(()=>{this.deletePlayerCmd = true;}, 100)
+      } else {
+        this.deletePlayerCmd = true;
+      }
+    },
+    async onDelete () {
+      console.log(`DELETE: ${this.delPlayer.id}`);
+      await this.request(`/api/players/${this.delPlayer.id}`, 'DELETE');
+      await this.refreshTable();
+    },
+    async refreshTable() {
+      console.log('REFRESH');
+      this.addDialog = false;
+      this.loading = true;
+      const res = await this.request('/api/players');
+      console.log(res);
+      this.players = res;
+      this.loading = false;
     }
   },
   async mounted() {

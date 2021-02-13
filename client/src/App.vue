@@ -99,7 +99,7 @@ export default {
         if (response.ok) {
           return await response.json();
         } else {
-          return new Promise((resolve) => {resolve([]);});
+          return new Promise((resolve) => {resolve({error: response.status});});
         }
 
       } catch (e) {

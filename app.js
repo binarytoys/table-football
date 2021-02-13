@@ -1,6 +1,7 @@
 const express = require('express')
 const config = require('config')
 const path = require('path')
+const {v4} = require('uuid')
 const DbDriverMemory = require('./database/dbdriver-memory');
 
 const dbDriver = new DbDriverMemory();
@@ -65,6 +66,20 @@ app.get('/api/dashboard', (req, res) => {
     (async ()=>{
         const data = await dbDriver.getDashboard();
         res.status(200).json(data);
+    })();
+})
+
+// POST *******************************
+app.post('/api/players', (req, res) => {
+    (async ()=>{
+        console.log(req.body);
+        const player = {...req.body, id: v4()}
+        const data = await dbDriver.addPlayer(player);
+        if (data) {
+            res.status(201).json(data);
+        } else {
+            res.status(422).json(data);
+        }
     })();
 })
 

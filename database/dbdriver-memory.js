@@ -1,6 +1,8 @@
 const DbDriver = require('./dbdriver-base');
 // const {v4} = require('uuid');
 
+const timeout = (data) => {return new Promise((resolve => {setTimeout(()=>{resolve(data)}, 1000)}))};
+
 class DbDriverMemory extends DbDriver {
     PLAYERS = [
         {
@@ -52,6 +54,7 @@ class DbDriverMemory extends DbDriver {
             team: 'Geneva'
         },
     ];
+
     TEAMS = [
         {
             id: '1',
@@ -86,6 +89,7 @@ class DbDriverMemory extends DbDriver {
             name: 'Chur'
         },
     ];
+
     GAMES = [
         {
             id: '1',
@@ -112,6 +116,7 @@ class DbDriverMemory extends DbDriver {
             result: '1:1'
         }
     ];
+
     DASHBOARD = [
         {
             id: '1',
@@ -165,35 +170,30 @@ class DbDriverMemory extends DbDriver {
     ]
 
     async getPlayers() {
-        return new Promise((resolve => {
-            setTimeout(() => {
-                resolve( this.PLAYERS );
-            }, 1000);
-        }));
+        return timeout(this.PLAYERS);
     }
 
     getTeams() {
-        return new Promise((resolve => {
-            setTimeout(() => {
-                resolve( this.TEAMS );
-            }, 1000);
-        }));
+        return timeout(this.TEAMS);
     }
 
     getGames() {
-        return new Promise((resolve => {
-            setTimeout(() => {
-                resolve( this.GAMES );
-            }, 1000);
-        }));
+        return timeout(this.GAMES);
     }
 
     getDashboard() {
-        return new Promise((resolve => {
-            setTimeout(() => {
-                resolve( this.DASHBOARD );
-            }, 1000);
-        }));
+        return timeout(this.DASHBOARD);
+    }
+
+    addPlayer(player) {
+        console.log(player);
+        const check = this.PLAYERS.find((item) => item.name.toLowerCase() === player.name.toLowerCase()
+            && item.surname.toLowerCase() === player.surname.toLowerCase());
+        if (check) {
+            return timeout(null);
+        }
+        this.PLAYERS.push(player);
+        return timeout(player);
     }
 }
 

@@ -2,79 +2,93 @@
   <div>
     <md-dialog :md-active.sync="active" :md-click-outside-to-close="false">
       <md-dialog-title>Add player</md-dialog-title>
-
-<!--
-        <md-field :class="getValidationClass('firstName')">
-          <label for="name">Player Name</label>
-          <md-input name="name" id="name" autocomplete="given-name" v-model="form.name"/>
-          <span class="md-error" v-if="!$v.form.name.required">The first name is required</span>
-          <span class="md-error" v-else-if="!$v.form.name.minlength">Invalid first name</span>
-        </md-field>
--->
       <md-dialog-content>
-        <md-field>
-          <label>Name</label>
-          <md-input v-model="name"></md-input>
-        </md-field>
-        <md-field>
-          <label>Surname</label>
-          <md-input v-model="surname"></md-input>
-        </md-field>
+          <md-field>
+            <label>Name</label>
+            <md-input v-model="name"></md-input>
+          </md-field>
+          <md-field>
+            <label>Surname</label>
+            <md-input v-model="surname"></md-input>
+          </md-field>
+          <md-field>
+            <label for="team">Team</label>
+            <md-select v-model="team" name="team" id="team">
+              <md-option value="1">Bern</md-option>
+              <md-option value="2">Zurich</md-option>
+              <md-option value="3">Basel</md-option>
+              <md-option value="4">Geneva</md-option>
+              <!--
+                          <md-divider></md-divider>
+                          <md-option value="0">Add Team</md-option>
+                          -->
+            </md-select>
+          </md-field>
       </md-dialog-content>
 
       <md-dialog-actions>
         <md-button class="md-primary" @click="active=false">Close</md-button>
-        <md-button class="md-primary" @click="createPlayer()">Save</md-button>
+        <md-button class="md-primary" @click="createPlayer" :disabled="!canCreate">Save</md-button>
       </md-dialog-actions>
     </md-dialog>
+
+    <md-dialog-alert
+        :md-active.sync="error"
+        :md-click-outside-to-close="false"
+        md-content="Player already exist"
+        md-confirm-text="OK" />
+
   </div>
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import {
-  required,
-  minLength,
-} from 'vuelidate/lib/validators';
-
 export default {
   name: 'AddPlayerDialog',
   props: ["showDlg"],
-  mixins: [validationMixin],
   data() {
     return {
       active: this.showDlg,
+      error: false,
       name: '',
-      surname: ''
-    }
-  },
-  validations: {
-    form: {
-      name: {
-        required,
-        minLength: minLength(2)
-      },
+      surname: '',
+      teamInt: null
     }
   },
   inject: ['request'],
   methods : {
-    getValidationClass (fieldName) {
-      const field = this.$v.form[fieldName]
+    async createPlayer() {
+      const player = {name: this.name, surname: this.surname, team: this.team};
 
-      if (field) {
-        return {
-          'md-invalid': field.$invalid && field.$dirty
+      console.log(player);
+      const res = await this.request('/api/players', 'POST', player);
+
+      if (res && res.error) {
+        console.error(`ERROR: ${res.error}`);
+        this.error = true;
+      } else {
+        this.active = false;
+        this.$emit('refresh');
+      }
+    }
+  },
+  computed : {
+    canCreate() {
+      return this.name.trim() && this.surname.trim()
+    },
+    team: {
+      // getter
+      get: function () {
+        return this.teamInt;
+      },
+      // setter
+      set: function (newValue) {
+        if (newValue === '0') {
+          this.teamInt = null; // reset current value
+          // add new team
+        } else {
+          this.teamInt = newValue;
         }
       }
-    },
-    async createPlayer() {
-      const {...player} = this.form;
-
-      await this.request('/api/players', 'POST', player);
-
-      // this.contacts.push(newContact)
-
-      this.form.name = '';
     }
   }
 }
