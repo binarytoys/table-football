@@ -96,7 +96,7 @@ app.delete('/api/players/:id', (req, res) => {
 app.put('/api/players', (req, res) => {
     (async ()=>{
         console.log(req.body);
-        const player = {...req.body}
+        const player = {...req.body};
         const data = await dbDriver.updatePlayer(player);
         if (data) {
             res.status(200).json(data);

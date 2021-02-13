@@ -18,9 +18,10 @@
   -->
 
         <md-table-row slot="md-table-row" slot-scope="{ item }">
-  <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
           <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
-          <md-table-cell md-label="Players">{{ item.players }}</md-table-cell>
+          <md-table-cell md-label="Players">
+            <span v-for="(player, index) of item.players" :key="player.surname">{{index > 0 ? ', ' : ' '}}{{ player }}</span>
+          </md-table-cell>
         </md-table-row>
       </md-table>
     </template>
@@ -60,12 +61,25 @@ export default {
     }
   },
   inject: ['request'],
+  methods: {
+
+    async refreshTable() {
+      console.log('REFRESH TEAMS');
+      this.addDialog = false;
+      this.loading = true;
+      const teamsRaw = await this.request('/api/teams');
+      console.log(teamsRaw);
+      const players = await this.request('/api/players');
+      console.log(players);
+      this.teams = teamsRaw.map( item => {
+        item['players'] = players.filter( player => player.team === item.id ).map( item => item.surname);
+        return item;
+      });
+      this.loading = false;
+    }
+  },
   async mounted() {
-    this.loading = true;
-    const res = await this.request('/api/teams');
-    console.log(res);
-    this.teams = res;
-    this.loading = false;
+    await this.refreshTable();
   }
 }
 </script>
