@@ -5,6 +5,8 @@ class DbDriver {
     getDashboard() {return [];}
 
     addPlayer(player) {return player;}
+
+    deletePlayer(id) {return true;}
 }
 
 module.exports = DbDriver;

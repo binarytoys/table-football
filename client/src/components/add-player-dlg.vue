@@ -1,7 +1,7 @@
 <template>
   <div>
     <md-dialog :md-active.sync="active" :md-click-outside-to-close="false">
-      <md-dialog-title>Add player</md-dialog-title>
+      <md-dialog-title>{{this.editPlayer ? "Edit PLayer" : "Add player"}}</md-dialog-title>
       <md-dialog-content>
           <md-field>
             <label>Name</label>
@@ -12,16 +12,9 @@
             <md-input v-model="surname"></md-input>
           </md-field>
           <md-field>
-            <label for="team">Team</label>
-            <md-select v-model="team" name="team" id="team">
-              <md-option value="1">Bern</md-option>
-              <md-option value="2">Zurich</md-option>
-              <md-option value="3">Basel</md-option>
-              <md-option value="4">Geneva</md-option>
-              <!--
-                          <md-divider></md-divider>
-                          <md-option value="0">Add Team</md-option>
-                          -->
+            <label for="teamSel">Team</label>
+            <md-select v-model="team" name="teamSel" id="teamSel">
+              <md-option v-for="item of teams" :key="item.id" :value="item.id">{{item.name}}</md-option>
             </md-select>
           </md-field>
       </md-dialog-content>
@@ -44,7 +37,7 @@
 <script>
 export default {
   name: 'AddPlayerDialog',
-  props: ["showDlg"],
+  props: ["showDlg", "editPlayer", "teams"],
   data() {
     return {
       active: this.showDlg,
@@ -81,14 +74,22 @@ export default {
         return this.teamInt;
       },
       // setter
-      set: function (newValue) {
-        if (newValue === '0') {
+      set: function (value) {
+        if (value === '0') {
           this.teamInt = null; // reset current value
           // add new team
         } else {
-          this.teamInt = newValue;
+          console.log(`selected ${value}`)
+          this.teamInt = value;
         }
       }
+    }
+  },
+  async mounted() {
+    if (this.editPlayer) {
+      this.name = this.editPlayer.name;
+      this.surname = this.editPlayer.surname;
+      this.team = this.editPlayer.team;
     }
   }
 }

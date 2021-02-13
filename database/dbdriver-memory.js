@@ -9,49 +9,49 @@ class DbDriverMemory extends DbDriver {
             id: '1',
             name: 'Thomas',
             surname: 'Partey',
-            team: 'Bern'
+            team: '1' // 'Bern'
         },
         {
             id: '2',
             name: 'Robert',
             surname: 'Lewandovski',
-            team: 'Bern'
+            team: '1' // 'Bern'
         },
         {
             id: '3',
             name: 'Lionel',
             surname: 'Messi',
-            team: 'Zurich'
+            team: '2' // 'Zurich'
         },
         {
             id: '4',
             name: 'Cristiano',
             surname: 'Ronaldo',
-            team: 'Geneva'
+            team: '5' // 'Geneva'
         },
         {
             id: '5',
             name: 'Kylian',
             surname: 'Lottin',
-            team: 'Basel'
+            team: '3' // 'Basel'
         },
         {
             id: '6',
             name: 'Bruno',
             surname: 'Fernandes',
-            team: 'Luzern'
+            team: '7' // 'Luzern'
         },
         {
             id: '7',
             name: 'Erlin',
             surname: 'Haaland',
-            team: 'Chur'
+            team: '8' // 'Chur'
         },
         {
             id: '8',
             name: 'Ciro',
             surname: 'Immobile',
-            team: 'Geneva'
+            team: '5' // 'Geneva'
         },
     ];
 
@@ -67,10 +67,6 @@ class DbDriverMemory extends DbDriver {
         {
             id: '3',
             name: 'Basel'
-        },
-        {
-            id: '4',
-            name: 'Bern'
         },
         {
             id: '5',
@@ -194,6 +190,13 @@ class DbDriverMemory extends DbDriver {
         }
         this.PLAYERS.push(player);
         return timeout(player);
+    }
+
+    deletePlayer(id) {
+        const oldLen = this.PLAYERS.length;
+        this.PLAYERS = this.PLAYERS.filter(c => c.id !== id)
+
+        return timeout(oldLen > this.PLAYERS.length);
     }
 }
 

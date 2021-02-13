@@ -8,12 +8,16 @@
     </template>
     <template v-else>
       <template v-if="addDialog">
-        <add-player-dialog :show-dlg="addDialog" @refresh="refreshTable"></add-player-dialog>
+        <add-player-dialog
+            :show-dlg="addDialog"
+            :teams="teams"
+            @refresh="refreshTable"
+            :editPlayer="editPlayer"></add-player-dialog>
       </template>
       <md-dialog-confirm
           :md-active.sync="deletePlayerCmd"
           md-title="Delete player"
-          md-content="`Do you want to delete player ${delPlayer.name} ${delPlayer.surname}`"
+          :md-content="`Do you want to delete player: ${delPlayer.name} ${delPlayer.surname}`"
           md-confirm-text="Agree"
           md-cancel-text="Cancel"
           @md-confirm="onDelete" />
@@ -30,19 +34,24 @@
           <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
           <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
           <md-table-cell md-label="Surname" md-sort-by="surname">{{ item.surname }}</md-table-cell>
-          <md-table-cell md-label="Team" md-sort-by="team">{{ item.team }}</md-table-cell>
+          <md-table-cell md-label="Team" md-sort-by="team">{{ item.teamName }}</md-table-cell>
           <md-table-cell md-label="Goals" md-sort-by="goals">{{ item.goals }}</md-table-cell>
-          <md-table-cell md-label="" style="width: 64px;">
-            <md-button class="md-icon-button" @click="showDelDialog(item)">
-              <md-icon>delete</md-icon>
-              <md-tooltip md-direction="top">Delete {{item.name}} {{item.surname}}</md-tooltip>
-            </md-button>
-          </md-table-cell>
-          <md-table-cell md-label="" style="width: 64px;">
-            <md-button class="md-icon-button" @click="showHistory(item)">
-              <md-icon>history</md-icon>
-              <md-tooltip md-direction="top">Games</md-tooltip>
-            </md-button>
+
+          <md-table-cell md-label="" style="width: 48px;">
+            <div class="action-cell">
+              <md-button class="md-icon-button" @click="showEditDialog(item)">
+                <md-icon>edit</md-icon>
+                <md-tooltip md-direction="top">Edit {{item.name}} {{item.surname}}</md-tooltip>
+              </md-button>
+              <md-button class="md-icon-button" @click="showDelDialog(item)">
+                <md-icon>delete</md-icon>
+                <md-tooltip md-direction="top">Delete {{item.name}} {{item.surname}}</md-tooltip>
+              </md-button>
+              <md-button class="md-icon-button" @click="showHistory(item)">
+                <md-icon>history</md-icon>
+                <md-tooltip md-direction="top">Games</md-tooltip>
+              </md-button>
+            </div>
           </md-table-cell>
         </md-table-row>
       </md-table>
@@ -88,6 +97,11 @@
   right: 16px;
   z-index: 100;
 }
+
+.action-cell {
+  display: flex;
+  flex-direction: row;
+}
 </style>
 
 <script>
@@ -102,8 +116,10 @@ export default {
       addDialog: false,
       isHistory: false,
       players: [],
-      delPlayer: null,
+      teams: [],
+      delPlayer: {name: '', surname: '', id: ''},
       deletePlayerCmd: false,
+      editPlayer: null,
       historyFor: {name: '', surname: ''},
       loadingHistory: false,
       historyGames: [{home: 'Bern', away: 'Basel', goals: 1}]
@@ -121,6 +137,17 @@ export default {
       })();
     },
     showAddDialog() {
+      this.editPlayer = null;
+      if (this.addDialog) {
+        this.addDialog = false;
+        setTimeout(()=>{this.addDialog = true;}, 100)
+      } else {
+        this.addDialog = true;
+      }
+    },
+    showEditDialog(item) {
+      this.editPlayer = {...item};
+      console.log(this.editPlayer);
       if (this.addDialog) {
         this.addDialog = false;
         setTimeout(()=>{this.addDialog = true;}, 100)
@@ -146,18 +173,24 @@ export default {
       console.log('REFRESH');
       this.addDialog = false;
       this.loading = true;
-      const res = await this.request('/api/players');
-      console.log(res);
-      this.players = res;
+      const playersRaw = await this.request('/api/players');
+      console.log(playersRaw);
+      this.teams = await this.request('/api/teams');
+      console.log(this.teams);
+      this.players = playersRaw.map( item => {
+        const found = this.teams.find( team => team.id === item.team );
+        if (found) {
+          item.team = found.id;
+          item.teamName = found.name;
+
+        }
+        return item;
+      });
       this.loading = false;
     }
   },
   async mounted() {
-    this.loading = true;
-    const res = await this.request('/api/players');
-    console.log(res);
-    this.players = res;
-    this.loading = false;
+    await this.refreshTable();
   }
 }
 </script>

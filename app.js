@@ -83,6 +83,17 @@ app.post('/api/players', (req, res) => {
     })();
 })
 
+// DELETE *******************************
+app.delete('/api/players/:id', (req, res) => {
+    (async ()=>{
+        const result = await dbDriver.deletePlayer(req.params.id);
+        console.log(`DELETE player [${req.params.id}]: ${result}`);
+        res.status(result ? 200 : 404).json(req.params.id);
+    })();
+})
+
+
+
 app.use('/', express.static(path.join(__dirname, 'client/dist')))
 
 app.get('*', (req, res) => {
