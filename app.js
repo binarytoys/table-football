@@ -83,11 +83,32 @@ app.post('/api/players', (req, res) => {
     })();
 })
 
+app.post('/api/teams', (req, res) => {
+    (async ()=>{
+        console.log(req.body);
+        const team = {...req.body, id: v4()}
+        const data = await dbDriver.addTeam(team);
+        if (data) {
+            res.status(201).json(data);
+        } else {
+            res.status(422).json(data);
+        }
+    })();
+})
+
 // DELETE *******************************
 app.delete('/api/players/:id', (req, res) => {
     (async ()=>{
         const result = await dbDriver.deletePlayer(req.params.id);
         console.log(`DELETE player [${req.params.id}]: ${result}`);
+        res.status(result ? 200 : 404).json(req.params.id);
+    })();
+})
+
+app.delete('/api/teams/:id', (req, res) => {
+    (async ()=>{
+        const result = await dbDriver.deleteTeam(req.params.id);
+        console.log(`DELETE team [${req.params.id}]: ${result}`);
         res.status(result ? 200 : 404).json(req.params.id);
     })();
 })
@@ -98,6 +119,19 @@ app.put('/api/players', (req, res) => {
         console.log(req.body);
         const player = {...req.body};
         const data = await dbDriver.updatePlayer(player);
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json(data);
+        }
+    })();
+})
+
+app.put('/api/teams', (req, res) => {
+    (async ()=>{
+        console.log(req.body);
+        const team = {...req.body};
+        const data = await dbDriver.updateTeam(team);
         if (data) {
             res.status(200).json(data);
         } else {

@@ -7,7 +7,14 @@
       <loader style="flex: 1"></loader>
     </template>
     <template v-else>
-      <md-button class="md-fab md-accent top-fab">
+      <template v-if="addDialog">
+        <add-team-dialog
+            :show-dlg="addDialog"
+            @refresh="refreshTable"
+            :editTeam="editTeam"></add-team-dialog>
+      </template>
+
+      <md-button class="md-fab md-accent top-fab" @click="showAddDialog()">
         <md-icon>add</md-icon>
       </md-button>
       <md-table v-model="teams" md-sort="name" md-sort-order="asc" md-card>
@@ -50,19 +57,31 @@
 
 <script>
 import Loader from "@/components/loader";
+import AddTeamDialog from "@/components/add-team-dlg"
 
 export default {
   name: 'TeamsView',
-  components: {Loader},
+  components: {Loader, AddTeamDialog},
   data() {
     return {
       loading: false,
+      addDialog: false,
+      editTeam: null,
       teams: [],
     }
   },
   inject: ['request'],
   methods: {
 
+    showAddDialog() {
+      this.editTeam = null;
+      if (this.addDialog) {
+        this.addDialog = false;
+        setTimeout(()=>{this.addDialog = true;}, 100)
+      } else {
+        this.addDialog = true;
+      }
+    },
     async refreshTable() {
       console.log('REFRESH TEAMS');
       this.addDialog = false;

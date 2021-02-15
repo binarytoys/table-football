@@ -1,7 +1,7 @@
 const DbDriver = require('./dbdriver-base');
 // const {v4} = require('uuid');
 
-const timeout = (data) => {return new Promise((resolve => {setTimeout(()=>{resolve(data)}, 1000)}))};
+const timeout = (data) => {return new Promise((resolve => {setTimeout(()=>{resolve(data)}, 300)}))};
 
 class DbDriverMemory extends DbDriver {
     PLAYERS = [
@@ -192,11 +192,26 @@ class DbDriverMemory extends DbDriver {
         return timeout(player);
     }
 
+    addTeam(team) {
+        console.log(team);
+        const check = this.TEAMS.find((item) => item.name.toLowerCase() === team.name.toLowerCase());
+        if (check) {
+            return timeout(null);
+        }
+        this.TEAMS.push(team);
+        return timeout(team);
+    }
+
     deletePlayer(id) {
         const oldLen = this.PLAYERS.length;
         this.PLAYERS = this.PLAYERS.filter(c => c.id !== id)
-
         return timeout(oldLen > this.PLAYERS.length);
+    }
+
+    deleteTeam(id) {
+        const oldLen = this.TEAMS.length;
+        this.TEAMS = this.TEAMS.filter(c => c.id !== id)
+        return timeout(oldLen > this.TEAMS.length);
     }
 
     updatePlayer(player) {
@@ -205,6 +220,16 @@ class DbDriverMemory extends DbDriver {
         if (idx >= 0) {
             this.PLAYERS[idx] = player;
             return timeout(player);
+        }
+        return timeout(null);
+    }
+
+    updateTeam(team) {
+        console.log('EDIT team: ' + JSON.stringify(playteamer));
+        const idx = this.TEAMS.findIndex(c => c.id === team.id);
+        if (idx >= 0) {
+            this.TEAMS[idx] = team;
+            return timeout(team);
         }
         return timeout(null);
     }
