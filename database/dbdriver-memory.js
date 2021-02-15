@@ -225,7 +225,7 @@ class DbDriverMemory extends DbDriver {
     }
 
     updateTeam(team) {
-        console.log('EDIT team: ' + JSON.stringify(playteamer));
+        console.log('EDIT team: ' + JSON.stringify(team));
         const idx = this.TEAMS.findIndex(c => c.id === team.id);
         if (idx >= 0) {
             this.TEAMS[idx] = team;

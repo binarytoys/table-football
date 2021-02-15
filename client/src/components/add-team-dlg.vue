@@ -1,7 +1,7 @@
 <template>
   <div>
     <md-dialog :md-active.sync="active" :md-click-outside-to-close="false">
-      <md-dialog-title>Add Team</md-dialog-title>
+      <md-dialog-title>{{this.editTeam ? "Edit Team" : "Add Team"}}</md-dialog-title>
       <md-dialog-content>
         <md-field>
           <label>Name</label>
@@ -46,6 +46,11 @@ export default {
       }
     }
   },
+  async mounted() {
+    if (this.editTeam) {
+      this.name = this.editTeam.name;
+    }
+  }
 }
 </script>
 

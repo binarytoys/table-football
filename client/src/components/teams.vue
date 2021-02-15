@@ -13,6 +13,13 @@
             @refresh="refreshTable"
             :editTeam="editTeam"></add-team-dialog>
       </template>
+      <md-dialog-confirm
+          :md-active.sync="deleteTeamCmd"
+          md-title="Delete Team"
+          :md-content="`Do you want to delete tem: ${delTeam.name}?`"
+          md-confirm-text="Agree"
+          md-cancel-text="Cancel"
+          @md-confirm="onDelete" />
 
       <md-button class="md-fab md-accent top-fab" @click="showAddDialog()">
         <md-icon>add</md-icon>
@@ -28,6 +35,19 @@
           <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
           <md-table-cell md-label="Players">
             <span v-for="(player, index) of item.players" :key="player.surname">{{index > 0 ? ', ' : ' '}}{{ player }}</span>
+          </md-table-cell>
+
+          <md-table-cell md-label="" style="width: 48px;">
+            <div class="action-cell">
+              <md-button class="md-icon-button" @click="showEditDialog(item)">
+                <md-icon>edit</md-icon>
+                <md-tooltip md-direction="top">Edit {{item.name}}</md-tooltip>
+              </md-button>
+              <md-button class="md-icon-button" @click="showDelDialog(item)">
+                <md-icon>delete</md-icon>
+                <md-tooltip md-direction="top">Delete {{item.name}}</md-tooltip>
+              </md-button>
+            </div>
           </md-table-cell>
         </md-table-row>
       </md-table>
@@ -53,6 +73,12 @@
   right: 16px;
   z-index: 100;
 }
+
+.action-cell {
+  display: flex;
+  flex-direction: row;
+}
+
 </style>
 
 <script>
@@ -67,12 +93,13 @@ export default {
       loading: false,
       addDialog: false,
       editTeam: null,
+      deleteTeamCmd: false,
       teams: [],
+      delTeam: {name: '', id: ''},
     }
   },
   inject: ['request'],
   methods: {
-
     showAddDialog() {
       this.editTeam = null;
       if (this.addDialog) {
@@ -81,6 +108,30 @@ export default {
       } else {
         this.addDialog = true;
       }
+    },
+    showEditDialog(item) {
+      this.editTeam = {...item};
+      console.log(this.editTeam);
+      if (this.addDialog) {
+        this.addDialog = false;
+        setTimeout(()=>{this.addDialog = true;}, 100)
+      } else {
+        this.addDialog = true;
+      }
+    },
+    showDelDialog(item) {
+      this.delTeam = item;
+      if (this.deleteTeamCmd) {
+        this.deleteTeamCmd = false;
+        setTimeout(()=>{this.deleteTeamCmd = true;}, 100)
+      } else {
+        this.deleteTeamCmd = true;
+      }
+    },
+    async onDelete () {
+      console.log(`DELETE: ${this.delTeam.id}`);
+      await this.request(`/api/teams/${this.delTeam.id}`, 'DELETE');
+      await this.refreshTable();
     },
     async refreshTable() {
       console.log('REFRESH TEAMS');

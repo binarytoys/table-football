@@ -17,7 +17,7 @@
       <md-dialog-confirm
           :md-active.sync="deletePlayerCmd"
           md-title="Delete player"
-          :md-content="`Do you want to delete player: ${delPlayer.name} ${delPlayer.surname}`"
+          :md-content="`Do you want to delete player: ${delPlayer.name} ${delPlayer.surname}?`"
           md-confirm-text="Agree"
           md-cancel-text="Cancel"
           @md-confirm="onDelete" />
