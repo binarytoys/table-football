@@ -25,33 +25,48 @@
                 </md-select>
               </md-field>
             </div>
-            <div class="result">
-              <span>{{home}} : {{away}}</span>
-            </div>
-            <div class="item">
-              <md-field>
-                <label for="homePlayers">Players</label>
-                <md-select v-model="playerHome" name="homePlayers" id="homePlayers">
-                  <md-option v-for="item of playersHome" :key="item.id" :value="item.id">{{item.name}}</md-option>
-                </md-select>
-              </md-field>
-              <md-button class="md-primary" @click="addHome()">ADD GOAL</md-button>
-            </div>
-            <div class="item">
-              <md-field>
-                <label for="awayPlayers">Players</label>
-                <md-select v-model="playerAway" name="awayPlayers" id="awayPlayers">
-                  <md-option v-for="item of playersAway" :key="item.id" :value="item.id">{{item.name}}</md-option>
-                </md-select>
-              </md-field>
-              <md-button class="md-primary" @click="addAway()">ADD GOAL</md-button>
-            </div>
+
+            <template v-if="started">
+              <div class="result">
+                <span style="font-size: 24px; font-weight: 600;">{{home}} : {{away}}</span>
+              </div>
+              <div class="item">
+                <md-field>
+                  <label for="homePlayers">Players</label>
+                  <md-select v-model="playerHome" name="homePlayers" id="homePlayers">
+                    <md-option v-for="item of playersHome" :key="item.id" :value="item.id">{{item.name}}</md-option>
+                  </md-select>
+                </md-field>
+                <md-button class="md-primary" @click="addHome()">ADD GOAL</md-button>
+              </div>
+              <div class="item">
+                <md-field>
+                  <label for="awayPlayers">Players</label>
+                  <md-select v-model="playerAway" name="awayPlayers" id="awayPlayers">
+                    <md-option v-for="item of playersAway" :key="item.id" :value="item.id">{{item.name}}</md-option>
+                  </md-select>
+                </md-field>
+                <md-button class="md-primary" @click="addAway()">ADD GOAL</md-button>
+              </div>
+              <div class="result">
+                <md-list>
+                  <md-list-item v-for="goal of goals" :key="goal.id">
+
+                  </md-list-item>
+                </md-list>
+              </div>
+            </template>
+            <template v-else>
+              <div class="result">
+                <md-button class="md-primary" @click="beginGame()" :disabled="!canBegin">BEGIN GAME</md-button>
+              </div>
+            </template>
           </div>
         </template>
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-primary" @click="active=false">End</md-button>
+        <md-button class="md-primary" @click="active=false">{{started ? 'End game' : 'Close'}}</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -80,13 +95,18 @@ export default {
       playerAway: null,
       goalsHome: [],
       goalsAway: [],
-      name: '',
+      goals: [],
+      game: '',
+      started: false,
       home: 0,
       away: 0
     }
   },
   inject: ['request'],
   computed: {
+    canBegin() {
+      return this.teamHomeInt && this.teamAwayInt;
+    },
     teamHome: {
       get: function () {
         return this.teamHomeInt;
@@ -111,7 +131,23 @@ export default {
     }
   },
   methods : {
-    addHome() {
+    beginGame() {
+      this.started = true;
+    },
+    async addHome() {
+      const goal = { player: this.playerHome, team: this.teamHomeInt, game: this.game};
+
+      console.log(goal);
+
+      const res = await this.request('/api/goals', 'POST', goal)
+
+      if (res && res.error) {
+        console.error(`ERROR: ${res.error}`);
+        this.error = true;
+      } else {
+        this.active = false;
+        this.$emit('refresh');
+      }
 
     },
     addAway() {
@@ -173,8 +209,6 @@ export default {
   height: 32px;
   display: flex;
   justify-content: space-around;
-  font-size: 24px;
-  font-weight: 600;
 }
 
 .gap {
