@@ -19,6 +19,7 @@ import PlayersView from './components/players';
 import Loader from './components/loader';
 import AddPlayerDialog from './components/add-player-dlg';
 import AddTeamDialog from './components/add-team-dlg'
+import AddGameDialog from './components/add-game-dlg'
 
 Vue.config.productionTip = false
 
@@ -38,7 +39,8 @@ new Vue({
     PlayersView,
     Loader,
     AddPlayerDialog,
-    AddTeamDialog
+    AddTeamDialog,
+    AddGameDialog
   },
   template: '<App/>',
 })

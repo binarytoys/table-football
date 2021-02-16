@@ -7,7 +7,12 @@
       <loader style="flex: 1"></loader>
     </template>
     <template v-else>
-      <md-button class="md-fab md-accent top-fab">
+      <template v-if="addDialog">
+        <add-game-dialog
+            :show-dlg="addDialog"
+            @refresh="refreshTable"></add-game-dialog>
+      </template>
+      <md-button class="md-fab md-accent top-fab" @click="showAddDialog()">
         <md-icon>add</md-icon>
       </md-button>
       <md-table v-model="games" md-sort="name" md-sort-order="asc" md-card>
@@ -50,23 +55,41 @@
 
 <script>
 import Loader from "@/components/loader";
+import AddGameDialog from "@/components/add-game-dlg"
+
 
 export default {
   name: 'GamesView',
-  components: {Loader},
+  components: {Loader, AddGameDialog},
   data() {
     return {
       loading: false,
+      addDialog: false,
       games: [],
     }
   },
   inject: ['request'],
+  methods: {
+    showAddDialog() {
+      if (this.addDialog) {
+        this.addDialog = false;
+        setTimeout(()=>{this.addDialog = true;}, 100)
+      } else {
+        this.addDialog = true;
+      }
+    },
+    async refreshTable() {
+      console.log('REFRESH GAMES');
+      this.addDialog = false;
+      this.loading = true;
+      const res = await this.request('/api/games');
+      console.log(res);
+      this.games = res;
+      this.loading = false;
+    }
+  },
   async mounted() {
-    this.loading = true;
-    const res = await this.request('/api/games');
-    console.log(res);
-    this.games = res;
-    this.loading = false;
+    await this.refreshTable();
   }
 }
 </script>
