@@ -39,7 +39,7 @@
                     </md-option>
                   </md-select>
                 </md-field>
-                <md-button class="md-primary" @click="addHome()">ADD GOAL</md-button>
+                <md-button class="md-primary" @click="addHome()" :disabled="updating">ADD GOAL</md-button>
               </div>
               <div class="item">
                 <md-field>
@@ -50,10 +50,15 @@
                     </md-option>
                   </md-select>
                 </md-field>
-                <md-button class="md-primary" @click="addAway()">ADD GOAL</md-button>
+                <md-button class="md-primary" @click="addAway()" :disabled="updating">ADD GOAL</md-button>
               </div>
-              <div v-for="goal of goals" :key="goal.id" class="result">
-                <span :class="goalClass(goal)">{{playerName(goal.player)}}</span>
+              <div class="goals">
+                <div v-for="goal of goals" :key="goal.id" class="result">
+                  <span :class="goalClass(goal)">{{playerName(goal.player)}}</span>
+                </div>
+                <div class="update-box" v-if="updating">
+                  <loader class="update-progress"></loader>
+                </div>
               </div>
             </template>
             <template v-else>
@@ -107,7 +112,8 @@ export default {
       home: 0,
       away: 0,
       error: false,
-      errorMsg: ''
+      errorMsg: '',
+      updating: false
     }
   },
   inject: ['request'],
@@ -183,6 +189,7 @@ export default {
     async addGoal(goal) {
       goal['tm'] = Date.now();
       console.log(goal);
+      this.updating = true;
       const res = await this.request('/api/goals', 'POST', goal)
 
       if (res && res.error) {
@@ -190,6 +197,7 @@ export default {
       } else {
         this.refreshGame();
       }
+      this.updating = false;
     },
     addHome() {
       this.addGoal({ player: this.playerHome, team: this.teamHomeInt, game: this.game.id, favor: this.teamHomeInt });
@@ -283,5 +291,26 @@ export default {
   width: 100%;
   text-align: left;
   padding-left: 50%;
+}
+
+.update-progress {
+}
+
+.goals {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.update-box {
+  position: absolute;
+  background-color:rgba(255, 255, 255, 0.5);
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
