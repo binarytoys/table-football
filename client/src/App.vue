@@ -82,7 +82,7 @@ export default {
   provide: {
     request: async (url, method = 'GET', data = null) => {
       try {
-        console.log(`REQUEST ${method} ${url}`);
+        console.log(`${method} ${url} ${data ? JSON.stringify(data) : ''}`);
         const headers = {};
         let body;
 

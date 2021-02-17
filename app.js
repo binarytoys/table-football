@@ -1,7 +1,6 @@
 const express = require('express')
 const config = require('config')
 const path = require('path')
-const {v4} = require('uuid')
 const DbDriverMemory = require('./database/dbdriver-memory');
 
 const dbDriver = new DbDriverMemory();
@@ -62,6 +61,17 @@ app.get('/api/games', (req, res) => {
     })();
 })
 
+app.get('/api/games/:id', (req, res) => {
+    (async ()=>{
+        const data = await dbDriver.getGame(req.params.id);
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json('{}');
+        }
+    })();
+})
+
 app.get('/api/dashboard', (req, res) => {
     (async ()=>{
         const data = await dbDriver.getDashboard();
@@ -69,31 +79,71 @@ app.get('/api/dashboard', (req, res) => {
     })();
 })
 
-// POST *******************************
-app.post('/api/players', (req, res) => {
+function addObject(res, type, obj) {
     (async ()=>{
-        console.log(req.body);
-        const player = {...req.body, id: v4()}
-        const data = await dbDriver.addPlayer(player);
+        console.log(obj);
+        let data;
+        switch (type) {
+            case 'player':
+                data = await dbDriver.addPlayer(obj);
+                break;
+            case 'team':
+                data = await dbDriver.addTeam(obj);
+                break;
+            case 'game':
+                data = await dbDriver.addGame(obj);
+                break;
+            case 'goal':
+                data = await dbDriver.addGoal(obj);
+                break;
+        }
         if (data) {
             res.status(201).json(data);
         } else {
             res.status(422).json(data);
         }
     })();
+}
+
+function updateObject(res, type, obj) {
+    (async ()=>{
+        console.log(obj);
+        let data;
+        switch (type) {
+            case 'player':
+                data = await dbDriver.updatePlayer(obj);
+                break;
+            case 'team':
+                data = await dbDriver.updateTeam(obj);
+                break;
+            case 'game':
+                data = await dbDriver.updateGame(obj);
+                break;
+        }
+        // const data = await dbDriver.updatePlayer(player);
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json(data);
+        }
+    })();
+
+}
+// POST *******************************
+app.post('/api/players', (req, res) => {
+    addObject(res, 'player', req.body);
 })
 
 app.post('/api/teams', (req, res) => {
-    (async ()=>{
-        console.log(req.body);
-        const team = {...req.body, id: v4()}
-        const data = await dbDriver.addTeam(team);
-        if (data) {
-            res.status(201).json(data);
-        } else {
-            res.status(422).json(data);
-        }
-    })();
+    addObject(res, 'team', req.body);
+})
+
+app.post('/api/games', (req, res) => {
+    addObject(res, 'game', req.body);
+})
+
+app.post('/api/goals', (req, res) => {
+    addObject(res, 'goal', req.body);
 })
 
 // DELETE *******************************
@@ -115,6 +165,8 @@ app.delete('/api/teams/:id', (req, res) => {
 
 // PUT *******************************
 app.put('/api/players', (req, res) => {
+    updateObject(res, 'player', req.body);
+/*
     (async ()=>{
         console.log(req.body);
         const player = {...req.body};
@@ -125,9 +177,12 @@ app.put('/api/players', (req, res) => {
             res.status(404).json(data);
         }
     })();
+*/
 })
 
 app.put('/api/teams', (req, res) => {
+    updateObject(res, 'team', req.body);
+/*
     (async ()=>{
         console.log(req.body);
         const team = {...req.body};
@@ -138,6 +193,7 @@ app.put('/api/teams', (req, res) => {
             res.status(404).json(data);
         }
     })();
+*/
 })
 
 app.use('/', express.static(path.join(__dirname, 'client/dist')))

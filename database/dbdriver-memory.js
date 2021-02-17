@@ -1,5 +1,5 @@
 const DbDriver = require('./dbdriver-base');
-// const {v4} = require('uuid');
+const {v4} = require('uuid')
 
 const timeout = (data) => {return new Promise((resolve => {setTimeout(()=>{resolve(data)}, 300)}))};
 
@@ -89,26 +89,26 @@ class DbDriverMemory extends DbDriver {
     GAMES = [
         {
             id: '1',
-            home: 'Bern',
-            away: 'Zurich',
+            home: {name: 'Bern', id: '1'},
+            away: {name: 'Zurich', id: '2'},
             result: '3:1'
         },
         {
             id: '2',
-            home: 'Basel',
-            away: 'Bern',
+            home: {name: 'Basel', id: '3'},
+            away: {name: 'Bern', id: '1'},
             result: '2:3'
         },
         {
             id: '3',
-            home: 'Geneva',
-            away: 'Friburg',
+            home: {name: 'Geneva', id: '5'},
+            away: {name: 'Friburg', id: '6'},
             result: '1:0'
         },
         {
             id: '4',
-            home: 'Luzern',
-            away: 'Chur',
+            home: {name: 'Luzern', id: '7'},
+            away: {name: 'Chur', id: '8'},
             result: '1:1'
         }
     ];
@@ -157,12 +157,13 @@ class DbDriverMemory extends DbDriver {
     ];
 
     GOALS = [
-        {
+        /*{
             id: '1',
             game: '1',
             player: '1',
-            team: '1'
-        }
+            team: '1',
+            favor: '1'
+        }*/
     ]
 
     async getPlayers() {
@@ -173,15 +174,36 @@ class DbDriverMemory extends DbDriver {
         return timeout(this.TEAMS);
     }
 
+    makeGame(game) {
+        const gameGoals = this.GOALS.filter( goal => goal.game === game.id);
+        console.log(gameGoals)
+        if (gameGoals.length > 0) {
+            const home = gameGoals.filter(goal => goal.favor === game.home.id);
+            const away = gameGoals.filter(goal => goal.favor === game.away.id);
+            game.result = `${home.length}:${away.length}`;
+            game['goals'] = {home, away};
+        }
+        return game;
+    }
+
     getGames() {
-        return timeout(this.GAMES);
+        const games = this.GAMES.map(game => {
+            return this.makeGame(game);
+        });
+        return timeout(games);
     }
 
     getDashboard() {
         return timeout(this.DASHBOARD);
     }
 
+    getGame(id) {
+        const game = this.makeGame(this.GAMES.find(item => item.id === id));
+        return timeout(game);
+    }
+
     addPlayer(player) {
+        player['id'] = v4();
         console.log(player);
         const check = this.PLAYERS.find((item) => item.name.toLowerCase() === player.name.toLowerCase()
             && item.surname.toLowerCase() === player.surname.toLowerCase());
@@ -193,6 +215,7 @@ class DbDriverMemory extends DbDriver {
     }
 
     addTeam(team) {
+        team['id'] = v4();
         console.log(team);
         const check = this.TEAMS.find((item) => item.name.toLowerCase() === team.name.toLowerCase());
         if (check) {
@@ -200,6 +223,20 @@ class DbDriverMemory extends DbDriver {
         }
         this.TEAMS.push(team);
         return timeout(team);
+    }
+
+    addGame(game) {
+        game['id'] = v4();
+        console.log(game);
+        this.GAMES.push(game);
+        return timeout(game);
+    }
+
+    addGoal(goal) {
+        goal['id'] = v4();
+        console.log('Goal ' + JSON.stringify(goal));
+        this.GOALS.push(goal);
+        return timeout(goal);
     }
 
     deletePlayer(id) {
@@ -230,6 +267,16 @@ class DbDriverMemory extends DbDriver {
         if (idx >= 0) {
             this.TEAMS[idx] = team;
             return timeout(team);
+        }
+        return timeout(null);
+    }
+
+    updateGame(game) {
+        console.log('EDIT game: ' + JSON.stringify(game));
+        const idx = this.GAMES.findIndex(c => c.id === game.id);
+        if (idx >= 0) {
+            this.GAMES[idx] = game;
+            return timeout(game);
         }
         return timeout(null);
     }

@@ -24,8 +24,8 @@
 
         <md-table-row slot="md-table-row" slot-scope="{ item }">
   <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
-          <md-table-cell md-label="Home" md-sort-by="home">{{ item.home }}</md-table-cell>
-          <md-table-cell md-label="Away" md-sort-by="away">{{ item.away }}</md-table-cell>
+          <md-table-cell md-label="Home" md-sort-by="home">{{ item.home.name }}</md-table-cell>
+          <md-table-cell md-label="Away" md-sort-by="away">{{ item.away.name }}</md-table-cell>
           <md-table-cell md-label="Result" md-sort-by="away">{{ item.result }}</md-table-cell>
         </md-table-row>
       </md-table>
@@ -78,14 +78,19 @@ export default {
         this.addDialog = true;
       }
     },
-    async refreshTable() {
-      console.log('REFRESH GAMES');
+    refreshTable() {
+      console.log('REFRESH TABLE');
       this.addDialog = false;
+      this.refresh();
+    },
+    async refresh() {
+      console.log('REFRESH');
       this.loading = true;
       const res = await this.request('/api/games');
       console.log(res);
       this.games = res;
       this.loading = false;
+
     }
   },
   async mounted() {

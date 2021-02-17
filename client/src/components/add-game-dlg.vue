@@ -34,7 +34,9 @@
                 <md-field>
                   <label for="homePlayers">Players</label>
                   <md-select v-model="playerHome" name="homePlayers" id="homePlayers">
-                    <md-option v-for="item of playersHome" :key="item.id" :value="item.id">{{item.name}}</md-option>
+                    <md-option v-for="item of playersHome" :key="item.id" :value="item.id">
+                      {{item.name}} {{item.surname}}
+                    </md-option>
                   </md-select>
                 </md-field>
                 <md-button class="md-primary" @click="addHome()">ADD GOAL</md-button>
@@ -43,17 +45,15 @@
                 <md-field>
                   <label for="awayPlayers">Players</label>
                   <md-select v-model="playerAway" name="awayPlayers" id="awayPlayers">
-                    <md-option v-for="item of playersAway" :key="item.id" :value="item.id">{{item.name}}</md-option>
+                    <md-option v-for="item of playersAway" :key="item.id" :value="item.id">
+                      {{item.name}} {{item.surname}}
+                    </md-option>
                   </md-select>
                 </md-field>
                 <md-button class="md-primary" @click="addAway()">ADD GOAL</md-button>
               </div>
-              <div class="result">
-                <md-list>
-                  <md-list-item v-for="goal of goals" :key="goal.id">
-
-                  </md-list-item>
-                </md-list>
+              <div v-for="goal of goals" :key="goal.id" class="result">
+                <span :class="goalClass(goal)">{{playerName(goal.player)}}</span>
               </div>
             </template>
             <template v-else>
@@ -66,9 +66,15 @@
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-primary" @click="active=false">{{started ? 'End game' : 'Close'}}</md-button>
+        <md-button class="md-primary" @click="closeDlg()">{{started ? 'End game' : 'Close'}}</md-button>
       </md-dialog-actions>
     </md-dialog>
+    <md-dialog-alert
+        :md-active.sync="error"
+        :md-click-outside-to-close="false"
+        :md-content="`${errorMsg}`"
+        md-confirm-text="OK" />
+
   </div>
 </template>
 
@@ -96,10 +102,12 @@ export default {
       goalsHome: [],
       goalsAway: [],
       goals: [],
-      game: '',
+      game: null,
       started: false,
       home: 0,
-      away: 0
+      away: 0,
+      error: false,
+      errorMsg: ''
     }
   },
   inject: ['request'],
@@ -131,27 +139,65 @@ export default {
     }
   },
   methods : {
-    beginGame() {
-      this.started = true;
+    closeDlg() {
+      this.active = false;
+      this.$emit('refresh');
     },
-    async addHome() {
-      const goal = { player: this.playerHome, team: this.teamHomeInt, game: this.game};
-
+    playerName(id) {
+      console.log('Player: ' + id);
+      const player =  this.players.find(player => player.id === id);
+      if (player) {
+        console.log(player.name);
+        return `${player.name} ${player.surname}`;
+      }
+      return '';
+    },
+    goalClass(goal) {
+      if (goal.favor === this.teamHomeInt) {
+        return 'goal-home';
+      } else {
+        return 'goal-away';
+      }
+    },
+    showError(msg) {
+      this.errorMsg = msg;
+      if (this.error) {
+        this.error = false;
+        setTimeout(() => {this.error = true;}, 100);
+      } else {
+        this.error = true;
+      }
+    },
+    async beginGame() {
+      this.started = true;
+      const game = {
+        home: {name: this.teams.find(item => item.id === this.teamHomeInt).name, id: this.teamHomeInt },
+        away: {name: this.teams.find(item => item.id === this.teamAwayInt).name, id: this.teamAwayInt }, result: '0:0'};
+      const res = await this.request('/api/games', 'POST', game);
+      if (res) {
+        this.game = res;
+      } else {
+        this.showError("Can not create a new game");
+      }
+    },
+    async addGoal(goal) {
+      goal['tm'] = Date.now();
       console.log(goal);
-
       const res = await this.request('/api/goals', 'POST', goal)
 
       if (res && res.error) {
-        console.error(`ERROR: ${res.error}`);
-        this.error = true;
+        this.showError(res.error);
       } else {
-        this.active = false;
-        this.$emit('refresh');
+        this.refreshGame();
       }
-
+    },
+    addHome() {
+      this.addGoal({ player: this.playerHome, team: this.teamHomeInt, game: this.game.id, favor: this.teamHomeInt });
+      this.home++;
     },
     addAway() {
-
+      this.addGoal({ player: this.playerAway, team: this.teamAwayInt, game: this.game.id, favor: this.teamAwayInt });
+      this.away++;
     },
     buildTeams() {
       console.log('Update lists');
@@ -159,6 +205,22 @@ export default {
       this.teamsAway = this.teams.filter( item => item.id !== this.teamHomeInt);
       console.log(this.teamsHome);
       console.log(this.teamsAway);
+    },
+    refreshGame() {
+      (async ()=>{
+        if (this.game) {
+          this.game = await this.request(`/api/games/${this.game.id}`);
+          console.log(this.game);
+          if (this.game.goals) {
+            this.goals = this.game.goals.home.concat(this.game.goals.away).sort((a, b) => {
+              if (a.tm > b.tm) {return 1;}
+              if (a.tm < b.tm) {return -1;}
+              return 0;
+            })
+            console.log(this.goals);
+          }
+        }
+      })();
     }
   },
   async mounted() {
@@ -211,8 +273,15 @@ export default {
   justify-content: space-around;
 }
 
-.gap {
-  min-width: 32px;
-  min-height: 1px;
+.goal-home {
+  width: 100%;
+  text-align: right;
+  padding-right: 50%;
+}
+
+.goal-away {
+  width: 100%;
+  text-align: left;
+  padding-left: 50%;
 }
 </style>
