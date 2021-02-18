@@ -132,7 +132,7 @@ export default {
       this.isHistory = true;
       (async ()=> {
         this.loadingHistory = true;
-        // this.historyGames = await this.request(`/api/players/history/${player.id}`);
+        this.historyGames = await this.request(`/api/players/history/${player.id}`);
         this.loadingHistory = false;
       })();
     },

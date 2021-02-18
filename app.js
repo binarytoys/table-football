@@ -47,6 +47,13 @@ app.get('/api/players', (req, res) => {
     })();
 })
 
+app.get('/api/players/history/:id', (req, res) => {
+    (async ()=>{
+        const data = await dbDriver.getPlayerHistory(req.params.id);
+        res.status(200).json(data);
+    })();
+})
+
 app.get('/api/teams', (req, res) => {
     (async ()=>{
         const data = await dbDriver.getTeams();

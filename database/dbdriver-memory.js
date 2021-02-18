@@ -313,6 +313,29 @@ class DbDriverMemory extends DbDriver {
         return timeout(game);
     }
 
+    getPlayerHistory(id) {
+        const games = {};
+        const goals = this.GOALS.filter(goal => goal.player === id);
+        if (goals.length === 0) {
+            return timeout([]);
+        }
+        goals
+            .sort((a,b) => {
+                if (a.tm > b.tm) return 1;
+                if (a.tm < b.tm) return -1;
+                return 0;
+            })
+            .forEach(goal => {
+            if (!games[goal.game]) {
+                const game = this.GAMES.find(game => goal.game === game.id);
+                games[goal.game] = {home: game.home.name, away: game.away.name, goals: 1};
+            } else {
+                games[goal.game].goals++;
+            }
+        });
+        return timeout(Object.values(games));
+    }
+
     addPlayer(player) {
         player['id'] = v4();
         console.log(player);

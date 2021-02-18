@@ -11,6 +11,7 @@ class DbDriver {
     getGames() { throw new Error("Method 'getGames()' must be implemented."); }
     getDashboard() { throw new Error("Method 'getDashboard()' must be implemented."); }
     getGame(id) { throw new Error("Method 'getGame(id)' must be implemented."); }
+    getPlayerHistory(id) { throw new Error("Method 'getPlayerHistory(id)' must be implemented."); }
 
     addPlayer(player) { throw new Error("Method 'addPlayer(player)' must be implemented."); }
     addTeam(team) { throw new Error("Method 'addTeam(team)' must be implemented."); }
