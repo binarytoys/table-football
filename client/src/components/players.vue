@@ -35,7 +35,7 @@
           <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
           <md-table-cell md-label="Surname" md-sort-by="surname">{{ item.surname }}</md-table-cell>
           <md-table-cell md-label="Team" md-sort-by="team">{{ item.teamName }}</md-table-cell>
-          <md-table-cell md-label="Goals" md-sort-by="goals">{{ item.goals }}</md-table-cell>
+          <md-table-cell md-label="Goals" md-sort-by="goalsStr">{{ item.goalsStr }}</md-table-cell>
 
           <md-table-cell md-label="" style="width: 48px;">
             <div class="action-cell">
@@ -182,10 +182,11 @@ export default {
         if (found) {
           item.team = found.id;
           item.teamName = found.name;
-
         }
+        item['goalsStr'] = item.goals ? item.goals.length.toString() : '';
         return item;
       });
+      console.log(this.players);
       this.loading = false;
     }
   },

@@ -66,7 +66,7 @@ export default {
   },
   computed : {
     canCreate() {
-      return this.name.trim() && this.surname.trim()
+      return this.name.trim() || this.surname.trim();
     },
     team: {
       // getter

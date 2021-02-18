@@ -53,6 +53,24 @@ class DbDriverMemory extends DbDriver {
             surname: 'Immobile',
             team: '5' // 'Geneva'
         },
+        {
+            id: '9',
+            name: 'Dusan',
+            surname: 'Tadic',
+            team: '6' // 'Friburg'
+        },
+        {
+            id: '10',
+            name: 'Harry',
+            surname: 'Kane',
+            team: '3' // 'Basel'
+        },
+        {
+            id: '11',
+            name: 'Pizzi',
+            surname: '',
+            team: '3' // 'Basel'
+        },
     ];
 
     TEAMS = [
@@ -157,17 +175,110 @@ class DbDriverMemory extends DbDriver {
     ];
 
     GOALS = [
-        /*{
+        {
             id: '1',
             game: '1',
             player: '1',
             team: '1',
-            favor: '1'
-        }*/
+            favor: '1',
+            tm: 1000
+        },
+        {
+            id: '2',
+            game: '1',
+            player: '2',
+            team: '1',
+            favor: '1',
+            tm: 1100
+        },
+        {
+            id: '3',
+            game: '1',
+            player: '3',
+            team: '2',
+            favor: '2',
+            tm: 1200
+        },
+        {
+            id: '4',
+            game: '1',
+            player: '1',
+            team: '1',
+            favor: '1',
+            tm: 1200
+        },
+        {
+            id: '5',
+            game: '2',
+            player: '1',
+            team: '1',
+            favor: '1',
+            tm: 1300
+        },
+        {
+            id: '6',
+            game: '2',
+            player: '1',
+            team: '1',
+            favor: '1',
+            tm: 1400
+        },
+        {
+            id: '7',
+            game: '2',
+            player: '2',
+            team: '1',
+            favor: '1',
+            tm: 1500
+        },
+        {
+            id: '8',
+            game: '2',
+            player: '11',
+            team: '3',
+            favor: '3',
+            tm: 1600
+        },
+        {
+            id: '9',
+            game: '2',
+            player: '10',
+            team: '3',
+            favor: '3',
+            tm: 1700
+        },
+        {
+            id: '10',
+            game: '3',
+            player: '8',
+            team: '5',
+            favor: '5',
+            tm: 2000
+        },
+        {
+            id: '11',
+            game: '4',
+            player: '6',
+            team: '7',
+            favor: '7',
+            tm: 3000
+        },
+        {
+            id: '12',
+            game: '4',
+            player: '7',
+            team: '8',
+            favor: '8',
+            tm: 3500
+        },
     ]
 
     async getPlayers() {
-        return timeout(this.PLAYERS);
+        const players = this.PLAYERS.map(player => {
+            player['goals'] = this.GOALS.filter(goal => goal.player === player.id && goal.team === goal.favor);
+            return player;
+        });
+        return timeout(players);
     }
 
     getTeams() {
