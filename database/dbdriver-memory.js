@@ -305,7 +305,38 @@ class DbDriverMemory extends DbDriver {
     }
 
     getDashboard() {
-        return timeout(this.DASHBOARD);
+        // return timeout(this.DASHBOARD);
+        const teams = this.TEAMS.map( team => {
+            const games = this.GAMES.filter( game => game.away.id === team.id || game.home.id === team.id);
+            if (games.length === 0) {
+                return { id: v4(), name: team.name, wins: 0, loses: 0, ratio: 0, goals: 0, lose: 0, diff: 0};
+            }
+            return games.reduce((acc, game) => {
+                const g = this.makeGame(game);
+                if (game.home.id === team.id) {
+                    if (g.goals.home.length > g.goals.away.length) {
+                        acc.wins++;
+                    } else if (g.goals.home.length < g.goals.away.length) {
+                        acc.loses++;
+                    }
+                    acc.goals += g.goals.home.length;
+                    acc.lose += g.goals.away.length
+                } else {
+                    if (g.goals.home.length > g.goals.away.length) {
+                        acc.loses++;
+                    } else if (g.goals.home.length < g.goals.away.length) {
+                        acc.wins++;
+                    }
+                    acc.goals += g.goals.away.length;
+                    acc.lose += g.goals.home.length
+                }
+                acc.games++;
+                acc.ratio = acc.wins / acc.games;
+                acc.diff = acc.goals - acc.lose;
+                return acc;
+            }, { id: v4(), name: team.name, games: 0, wins: 0, loses: 0, ratio: 0, goals: 0, lose: 0, diff: 0});
+        });
+        return timeout(teams);
     }
 
     getGame(id) {
