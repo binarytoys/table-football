@@ -1,4 +1,12 @@
 {
     "port": 5900,
-    "baseUrl": "http://localhost:5900"
+    "baseUrl": "http://localhost:5900",
+    "db": "mem",
+    "mysql" :{
+        "host": "localhost",
+        "user": "USER_NAME",
+        "password": "USER_PASSWORD",
+        "database": "DATABASE_NAME",
+        "timezone": "utc"
+    }
 }

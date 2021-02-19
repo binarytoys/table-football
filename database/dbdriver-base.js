@@ -1,10 +1,12 @@
 class DbDriver {
 
-    constructor() {
+    constructor(params) {
         if (this.constructor === DbDriver) {
             throw new Error("Abstract classes can't be instantiated.");
         }
     }
+
+    async init() { throw new Error("Method 'init()' must be implemented."); }
 
     getPlayers() { throw new Error("Method 'getPlayers()' must be implemented."); }
     getTeams() { throw new Error("Method 'getTeams()' must be implemented."); }

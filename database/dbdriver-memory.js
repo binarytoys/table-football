@@ -92,7 +92,7 @@ class DbDriverMemory extends DbDriver {
         },
         {
             id: '6',
-            name: 'Friburg'
+            name: 'Fribourg'
         },
         {
             id: '7',
@@ -109,69 +109,26 @@ class DbDriverMemory extends DbDriver {
             id: '1',
             home: {name: 'Bern', id: '1'},
             away: {name: 'Zurich', id: '2'},
-            result: '3:1'
+            // result: '3:1'
         },
         {
             id: '2',
             home: {name: 'Basel', id: '3'},
             away: {name: 'Bern', id: '1'},
-            result: '2:3'
+            // result: '2:3'
         },
         {
             id: '3',
             home: {name: 'Geneva', id: '5'},
             away: {name: 'Friburg', id: '6'},
-            result: '1:0'
+            // result: '1:0'
         },
         {
             id: '4',
             home: {name: 'Luzern', id: '7'},
             away: {name: 'Chur', id: '8'},
-            result: '1:1'
+            // result: '1:1'
         }
-    ];
-
-    DASHBOARD = [
-        {
-            id: '1',
-            name: 'Bern',
-            wins: 10,
-            loses: 2,
-            ratio: 10 / 2,
-            goals: 15,
-            lose: 10,
-            diff: 15 - 10
-        },
-        {
-            id: '2',
-            name: 'Zurich',
-            wins: 5,
-            loses: 7,
-            ratio: 5 / 7,
-            goals: 8,
-            lose: 12,
-            diff: 8 - 12
-        },
-        {
-            id: '3',
-            name: 'Basel',
-            wins: 6,
-            loses: 6,
-            ratio: 6 / 6,
-            goals: 10,
-            lose: 12,
-            diff: 10 - 12
-        },
-        {
-            id: '4',
-            name: 'Geneva',
-            wins: 7,
-            loses: 6,
-            ratio: 7 / 6,
-            goals: 14,
-            lose: 12,
-            diff: 14 - 12
-        },
     ];
 
     GOALS = [
@@ -205,7 +162,7 @@ class DbDriverMemory extends DbDriver {
             player: '1',
             team: '1',
             favor: '1',
-            tm: 1200
+            tm: 1250
         },
         {
             id: '5',
@@ -273,6 +230,10 @@ class DbDriverMemory extends DbDriver {
         },
     ]
 
+    async init() {
+        return timeout(null);
+    }
+
     async getPlayers() {
         const players = this.PLAYERS.map(player => {
             player['goals'] = this.GOALS.filter(goal => goal.player === player.id && goal.team === goal.favor);
@@ -286,6 +247,7 @@ class DbDriverMemory extends DbDriver {
     }
 
     makeGame(game) {
+        game.result = '0:0';
         const gameGoals = this.GOALS.filter( goal => goal.game === game.id);
         console.log(gameGoals)
         if (gameGoals.length > 0) {

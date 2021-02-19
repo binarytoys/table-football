@@ -2,25 +2,9 @@ const express = require('express')
 const config = require('config')
 const path = require('path')
 const DbDriverMemory = require('./database/dbdriver-memory');
+const DbDriverMySQL = require('./database/dbdriver-mysql');
 
-const dbDriver = new DbDriverMemory();
-/*
-let PLAYERS = [
-    {id: v4(), name: ''}
-];
-
-let TEAMS = [
-    {id: v4(), name: '', players:[]}
-];
-
-let GAMES = [
-    {id: v4(), home: '', away: '', goalsHome: [], goalsAway: []}
-];
-
-let GOALS = [
-    {id: v4(), game: '', player: ''}
-];
-*/
+const dbDriver = config.get('db') === 'mysql' ? new DbDriverMySQL(config.get('mysql')) : new DbDriverMemory();
 
 const app = express()
 
@@ -173,41 +157,21 @@ app.delete('/api/teams/:id', (req, res) => {
 // PUT *******************************
 app.put('/api/players', (req, res) => {
     updateObject(res, 'player', req.body);
-/*
-    (async ()=>{
-        console.log(req.body);
-        const player = {...req.body};
-        const data = await dbDriver.updatePlayer(player);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json(data);
-        }
-    })();
-*/
 })
 
 app.put('/api/teams', (req, res) => {
     updateObject(res, 'team', req.body);
-/*
-    (async ()=>{
-        console.log(req.body);
-        const team = {...req.body};
-        const data = await dbDriver.updateTeam(team);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json(data);
-        }
-    })();
-*/
-})
+});
 
-app.use('/', express.static(path.join(__dirname, 'client/dist')))
+app.use('/', express.static(path.join(__dirname, 'client/dist')));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client/dist', 'index.html'))
-})
+    res.sendFile(path.resolve(__dirname, 'client/dist', 'index.html'));
+});
 
-app.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+(async () => {
+    await dbDriver.init();
+    app.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+})();
+
 

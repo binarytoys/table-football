@@ -178,7 +178,8 @@ export default {
       this.started = true;
       const game = {
         home: {name: this.teams.find(item => item.id === this.teamHomeInt).name, id: this.teamHomeInt },
-        away: {name: this.teams.find(item => item.id === this.teamAwayInt).name, id: this.teamAwayInt }, result: '0:0'};
+        away: {name: this.teams.find(item => item.id === this.teamAwayInt).name, id: this.teamAwayInt }
+      };
       const res = await this.request('/api/games', 'POST', game);
       if (res) {
         this.game = res;
