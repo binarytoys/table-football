@@ -273,8 +273,43 @@ class DbDriverMySQL extends DbDriver {
         return res;// players;
     }
 
-    getDashboard() {
-        return [];
+    async getDashboard() {
+        const rawTeams = await this.query('SELECT * FROM `teams`;');
+        const gamesRaw = await this.getGames();
+        console.log(gamesRaw);
+
+        const teams = rawTeams.map( team => {
+            const games = gamesRaw.filter( game => game.away.id === team.id || game.home.id === team.id);
+            if (games.length === 0) {
+                return { id: v4(), name: team.name, wins: 0, loses: 0, ratio: 0, goals: 0, lose: 0, diff: 0};
+            }
+            return games.reduce((acc, game) => {
+                acc.games++;
+                if (game.goals && (game.goals.home.length > 0 || game.goals.away.length > 0)) {
+                    if (game.home.id === team.id) {
+                        if (game.goals.home.length > game.goals.away.length) {
+                            acc.wins++;
+                        } else if (game.goals.home.length < game.goals.away.length) {
+                            acc.loses++;
+                        }
+                        acc.goals += game.goals.home.length;
+                        acc.lose += game.goals.away.length
+                    } else {
+                        if (game.goals.home.length > game.goals.away.length) {
+                            acc.loses++;
+                        } else if (game.goals.home.length < game.goals.away.length) {
+                            acc.wins++;
+                        }
+                        acc.goals += game.goals.away.length;
+                        acc.lose += game.goals.home.length
+                    }
+                    acc.ratio = acc.wins / acc.games;
+                    acc.diff = acc.goals - acc.lose;
+                }
+                return acc;
+            }, { id: v4(), name: team.name, games: 0, wins: 0, loses: 0, ratio: 0, goals: 0, lose: 0, diff: 0});
+        })
+        return teams;
     }
 
     async getGames() {
