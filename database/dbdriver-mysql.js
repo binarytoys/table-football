@@ -38,7 +38,7 @@ const dbInit = [
     // Begin
     //
     "CREATE TABLE IF NOT EXISTS `teams` (" +
-    "`id` varchar(50) NOT NULL PRIMARY KEY," +       // alphanumeric customer code
+    "`id` varchar(50) NOT NULL PRIMARY KEY," +
     "`name` varchar(50) NOT NULL," +
     "UNIQUE KEY `unique_index` (`id`)" +
     ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
@@ -59,7 +59,7 @@ const dbInit = [
     // Begin
     //
     "CREATE TABLE IF NOT EXISTS `games` (" +
-    "`id` varchar(50) NOT NULL PRIMARY KEY," +       // alphanumeric customer code
+    "`id` varchar(50) NOT NULL PRIMARY KEY," +
     "`home` varchar(50) NOT NULL," +
     "`away` varchar(50) NOT NULL," +
     "UNIQUE KEY `unique_index` (`id`)" +
@@ -78,7 +78,7 @@ const dbInit = [
     // Begin
     //
     "CREATE TABLE IF NOT EXISTS `goals` (" +
-    "`id` varchar(50) NOT NULL PRIMARY KEY," +       // alphanumeric customer code
+    "`id` varchar(50) NOT NULL PRIMARY KEY," +
     "`game` varchar(50) NOT NULL," +
     "`player` varchar(50) NOT NULL," +
     "`team` varchar(50) NOT NULL," +
@@ -117,7 +117,6 @@ class DbDriverMySQL extends DbDriver {
                 password       :null,
                 database       :null,
                 timezone       :null,
-            // init: dbInit,
             ...params
         };
         // this.dbInstaller = dbInit;
@@ -134,18 +133,16 @@ class DbDriverMySQL extends DbDriver {
         console.log(this.params);
     }
 
-    async query(query, callback) {
+    async query(query) {
         return new Promise((resolve, reject) => {
-            this.pool.getConnection((connection) => {
-                connection.query(query, function (err, result){
+            this.pool.getConnection((err, connection) => {
+                connection.query(query, (err, result) => {
                     connection.release();
                     if (err) {
                         reject(err);
                     } else {
                         resolve(result);
                     }
-                    /* istanbul ignore next */
-                    // _this.runCallback(callback, result, err);
                 });
             });
         })
@@ -175,7 +172,6 @@ class DbDriverMySQL extends DbDriver {
 
             dbCredentials['database'] = dbName;
 
-            // const len = dbInit.length;
             let connection2 = mysql.createConnection(dbCredentials);
 
             (async ()=> {
@@ -199,7 +195,6 @@ class DbDriverMySQL extends DbDriver {
 
     async init() {
         return new Promise((resolve, reject) => {
-            // resolve(true);
             try {
                 let connection = mysql.createConnection({
                     host     : this.params.host,
@@ -213,12 +208,10 @@ class DbDriverMySQL extends DbDriver {
 
                 connection.query(dbExist, (err, result) => {
                     connection.destroy();
-                    /* istanbul ignore next */
                     if (err) {
                         console.log('query[' + dbExist + '] ', err);
                         reject(err);
                     }
-                    /* istanbul ignore else */
                     if (result.length === 0) {
                         (async ()=>{
                             resolve(await this.makeVersionZero());
@@ -227,18 +220,36 @@ class DbDriverMySQL extends DbDriver {
                     else {
                         // a good point for DB update
                         console.log('Database already exist');
+                        resolve(true);
                     }
                 });
             }
             catch (ex) {
-                /* istanbul ignore next */
                 console.log("* FATAL ERROR DURING DB DRIVER INIT!", ex);
                 reject(ex);
             }
-
         })
     }
 
+    async getTeams() {
+        console.log('GET teams');
+        const teams = await this.query('SELECT * FROM `teams`;');
+        console.log(teams);
+
+        return teams;
+    }
+
+    getPlayers() {
+        return [];
+    }
+
+    getDashboard() {
+        return [];
+    }
+
+    getGames() {
+        return [];
+    }
 }
 
 module.exports = DbDriverMySQL;
