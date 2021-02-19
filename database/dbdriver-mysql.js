@@ -23,7 +23,7 @@ const dbInit = [
     "INSERT INTO `players` VALUES ('4','Cristiano', 'Ronaldo', '5')",
     "INSERT INTO `players` VALUES ('5','Kylian', 'Lottin', '3')",
     "INSERT INTO `players` VALUES ('6','Bruno', 'Fernandes', '7')",
-    "INSERT INTO `players` VALUES ('7','Erlin', 'Haaland', '6')",
+    "INSERT INTO `players` VALUES ('7','Erlin', 'Haaland', '8')",
     "INSERT INTO `players` VALUES ('8','Ciro', 'Immobile', '5')",
     "INSERT INTO `players` VALUES ('9','Dusan', 'Tadic', '6')",
     "INSERT INTO `players` VALUES ('10','Harry', 'Kane', '3')",
@@ -46,10 +46,10 @@ const dbInit = [
     "INSERT INTO `teams` VALUES ('1','Bern')",
     "INSERT INTO `teams` VALUES ('2','Zurich')",
     "INSERT INTO `teams` VALUES ('3','Basel')",
-    "INSERT INTO `teams` VALUES ('4','Geneva')",
-    "INSERT INTO `teams` VALUES ('5','Fribourg')",
-    "INSERT INTO `teams` VALUES ('6','Luzern')",
-    "INSERT INTO `teams` VALUES ('7','Chur')",
+    "INSERT INTO `teams` VALUES ('5','Geneva')",
+    "INSERT INTO `teams` VALUES ('6','Fribourg')",
+    "INSERT INTO `teams` VALUES ('7','Luzern')",
+    "INSERT INTO `teams` VALUES ('8','Chur')",
     //
     // End
     //
@@ -69,6 +69,7 @@ const dbInit = [
     "INSERT INTO `games` VALUES ('2', '3', '1')",
     "INSERT INTO `games` VALUES ('3', '5', '6')",
     "INSERT INTO `games` VALUES ('4', '7', '8')",
+    "INSERT INTO `games` VALUES ('5', '6', '7')",
     //
     // End
     //
@@ -276,8 +277,64 @@ class DbDriverMySQL extends DbDriver {
         return [];
     }
 
-    getGames() {
-        return [];
+    async getGames() {
+        const rawGames = await this.query('SELECT games.id AS `games_id`, home, away, goals.*, h_name.name AS `name_home`, a_name.name AS `name_away`\n' +
+            'FROM `games`\n' +
+            ' LEFT JOIN `goals` ON games.id = goals.game\n' +
+            ' LEFT JOIN `teams` AS `h_name` ON games.home = h_name.id\n' +
+            ' LEFT JOIN `teams` AS `a_name` ON games.away = a_name.id;');
+        console.log(rawGames);
+        const games = rawGames.reduce((acc, game) => {
+            if (game.games_id in acc) {
+                if (game.favor === game.home) {
+                    acc[game.games_id].goals.home.push({
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm});
+                } else {
+                    acc[game.games_id].goals.away.push({
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm});
+                }
+                acc[game.games_id]['result'] = `${acc[game.games_id].goals.home.length}:${acc[game.games_id].goals.away.length}`;
+            } else {
+                acc[game.games_id] = {
+                    id: game.games_id,
+                    home: { id: game.home, name: game.name_home },
+                    away: { id: game.away, name: game.name_away },
+                    result: '0:0'
+                };
+                if (game.id) {
+                    const home = game.favor === game.home ? [{
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm}] : [];
+                    const away = game.favor === game.away ? [{
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm}] : [];
+                    acc[game.games_id]['result'] = `${home.length}:${away.length}`;
+                    acc[game.games_id]['goals'] = {home, away};
+                }
+            }
+            return acc;
+        }, {});
+        const res = Object.values(games);
+        console.log(res);
+        return res;
     }
 }
 
