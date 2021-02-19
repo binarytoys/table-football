@@ -232,15 +232,44 @@ class DbDriverMySQL extends DbDriver {
     }
 
     async getTeams() {
-        console.log('GET teams');
         const teams = await this.query('SELECT * FROM `teams`;');
         console.log(teams);
 
         return teams;
     }
 
-    getPlayers() {
-        return [];
+    async getPlayers() {
+        const rawPlayers = await this.query('SELECT players.id AS `player_id`, name, surname, players.team AS player_team, goals.* FROM `players` LEFT JOIN `goals` ON players.id = goals.player AND goals.team = goals.favor;');
+        const players = rawPlayers.reduce((acc, player) => {
+            if (player.player_id in acc) {
+                acc[player.player_id].goals.push({
+                    id: player.id,
+                    game: player.game,
+                    player: player.player_id,
+                    team: player.team,
+                    favor: player.favor,
+                    tm: player.tm});
+            } else {
+                acc[player.player_id] = {
+                    id: player.player_id,
+                    name: player.name,
+                    surname: player.surname,
+                    team: player.player_team,
+                    goals: player.id ? [{
+                        id: player.id,
+                        game: player.game,
+                        player: player.player_id,
+                        team: player.team,
+                        favor: player.favor,
+                        tm: player.tm}
+                        ] : []
+                };
+            }
+            return acc;
+        }, {});
+        const res = Object.values(players);
+        console.log(res);
+        return res;// players;
     }
 
     getDashboard() {
