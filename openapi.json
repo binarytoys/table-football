@@ -1,0 +1,607 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Table Football Coding Challenge",
+        "description": "A simple API for implementing Table Football Coding Challenge",
+        "termsOfService": "",
+        "contact": {
+            "name": "Viktor Korotya"
+        },
+        "license": {
+            "name": "MIT"
+        }
+    },
+    "host": "localhost",
+    "basePath": "/api",
+    "tags": [
+        {
+            "name": "team",
+            "description": "Everything about Teams"
+        },
+        {
+            "name": "player",
+            "description": "Everythig about Players"
+        },
+        {
+            "name": "game",
+            "description": "Operations about Games"
+        },
+        {
+            "name": "goal",
+            "description": "Operations about Goals"
+        },
+        {
+            "name": "dashboard",
+            "description": "Operations about Dashboard"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+        "/teams": {
+            "get": {
+                "tags": [
+                    "team"
+                ],
+                "summary": "Get all teams",
+                "description": "",
+                "operationId": "getTeams",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Team"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "team"
+                ],
+                "summary": "Add a new team",
+                "description": "",
+                "operationId": "addTeam",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Team object that needs to be added to the DB",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Team"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Resource created"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity, i.e. name already exist"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "team"
+                ],
+                "summary": "Update an existing team",
+                "description": "",
+                "operationId": "updateTeam",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Team object that needs to be added to the DB",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Team"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Team not found"
+                    }
+                }
+            }
+        },
+        "/teams/{teamId}": {
+            "delete": {
+                "tags": [
+                    "team"
+                ],
+                "summary": "Deletes a team",
+                "description": "",
+                "operationId": "deleteTeam",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "teamId",
+                        "in": "path",
+                        "description": "Team id to delete",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Team not found"
+                    }
+                }
+            }
+        },
+        "/players": {
+            "get": {
+                "tags": [
+                    "player"
+                ],
+                "summary": "Get all players",
+                "description": "",
+                "operationId": "getPlayers",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Player"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "player"
+                ],
+                "summary": "Add a new player",
+                "description": "",
+                "operationId": "addPlayer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Player object that needs to be added to the DB",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Resource created"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity, i.e. name/surname combination already exist"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "player"
+                ],
+                "summary": "Update an existing player",
+                "description": "",
+                "operationId": "updatePlayer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "player object that needs to be added to the DB",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Player"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Player not found"
+                    }
+                }
+            }
+        },
+        "/players/{playerId}": {
+            "delete": {
+                "tags": [
+                    "player"
+                ],
+                "summary": "Deletes a player",
+                "description": "",
+                "operationId": "deletePlayer",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "playerId",
+                        "in": "path",
+                        "description": "Player id to delete",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Player not found"
+                    }
+                }
+            }
+        },
+        "/players/history/{playerId}": {
+            "get": {
+                "tags": [
+                    "player"
+                ],
+                "summary": "Find player history by ID",
+                "description": "Returns a games history for player",
+                "operationId": "getPplayerHistory",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "playerId",
+                        "in": "path",
+                        "description": "ID of player to return",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/GameHistory"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "Player not found"
+                    }
+                }
+            }
+        },
+        "/games": {
+            "get": {
+                "tags": [
+                    "game"
+                ],
+                "summary": "Get all games",
+                "description": "",
+                "operationId": "getGames",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Game"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "game"
+                ],
+                "summary": "Add a new game",
+                "description": "",
+                "operationId": "addGame",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Game object that needs to be added to the DB",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Game"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Resource created"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity, i.e. name/surname combination already exist"
+                    }
+                }
+            }
+        },
+        "/goals": {
+            "post": {
+                "tags": [
+                    "goal"
+                ],
+                "summary": "Add a new goal",
+                "description": "",
+                "operationId": "addGoal",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Goal object that needs to be added to the DB",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Goal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Resource created"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity, i.e. name/surname combination already exist"
+                    }
+                }
+            }
+        },
+        "/dashboard": {
+            "get": {
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get all dashboard records",
+                "description": "",
+                "operationId": "getDashboard",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Dashboard"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "petstore_auth": {
+            "type": "oauth2",
+            "authorizationUrl": "http://petstore.swagger.io/oauth/dialog",
+            "flow": "implicit",
+            "scopes": {
+                "write:pets": "modify pets in your account",
+                "read:pets": "read your pets"
+            }
+        },
+        "api_key": {
+            "type": "apiKey",
+            "name": "api_key",
+            "in": "header"
+        }
+    },
+    "definitions": {
+        "Team": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Player": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "team": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            }
+        },
+        "Game": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "home": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "away": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            }
+        },
+        "GameHistory": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "type": "string"
+                },
+                "away": {
+                    "type": "string"
+                },
+                "goals": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "Goal": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "game": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "player": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "team": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "favor": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "tm": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "Dashboard": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "games": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "wins": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "loses": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "ratio": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "gf": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "ga": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "gd": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "ApiResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+}
