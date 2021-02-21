@@ -397,7 +397,7 @@ class DbDriverMemory extends DbDriver {
         }
         return timeout(null);
     }
-    
+
 }
 
 module.exports = DbDriverMemory;
