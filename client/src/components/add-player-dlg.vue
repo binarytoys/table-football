@@ -28,7 +28,7 @@
     <md-dialog-alert
         :md-active.sync="error"
         :md-click-outside-to-close="false"
-        md-content="Player already exist"
+        :md-content="`${errorMsg}`"
         md-confirm-text="OK" />
 
   </div>
@@ -42,6 +42,7 @@ export default {
     return {
       active: this.showDlg,
       error: false,
+      errorMsg: '',
       name: '',
       surname: '',
       teamInt: null
@@ -49,6 +50,15 @@ export default {
   },
   inject: ['request'],
   methods : {
+    showError(msg) {
+      this.errorMsg = msg;
+      if (this.error) {
+        this.error = false;
+        setTimeout(() => {this.error = true;}, 100);
+      } else {
+        this.error = true;
+      }
+    },
     async createPlayer() {
       const player = {id: this.editPlayer ? this.editPlayer.id : null, name: this.name, surname: this.surname, team: this.team};
 
@@ -57,7 +67,7 @@ export default {
 
       if (res && res.error) {
         console.error(`ERROR: ${res.error}`);
-        this.error = true;
+        this.showError(res.error);
       } else {
         this.active = false;
         this.$emit('refresh');

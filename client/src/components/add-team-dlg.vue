@@ -14,6 +14,12 @@
         <md-button class="md-primary" @click="createTeam()">Save</md-button>
       </md-dialog-actions>
     </md-dialog>
+
+    <md-dialog-alert
+        :md-active.sync="error"
+        :md-click-outside-to-close="false"
+        :md-content="`${errorMsg}`"
+        md-confirm-text="OK" />
   </div>
 </template>
 
@@ -26,11 +32,21 @@ export default {
     return {
       active: this.showDlg,
       error: false,
+      errorMsg: '',
       name: '',
     }
   },
   inject: ['request'],
   methods : {
+    showError(msg) {
+      this.errorMsg = msg;
+      if (this.error) {
+        this.error = false;
+        setTimeout(() => {this.error = true;}, 100);
+      } else {
+        this.error = true;
+      }
+    },
     async createTeam() {
       const team = {id: this.editTeam ? this.editTeam.id : null, name: this.name};
 
@@ -39,7 +55,7 @@ export default {
 
       if (res && res.error) {
         console.error(`ERROR: ${res.error}`);
-        this.error = true;
+        this.showError(res.error);
       } else {
         this.active = false;
         this.$emit('refresh');

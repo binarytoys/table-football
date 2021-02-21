@@ -107,9 +107,6 @@ function updateObject(res, type, obj) {
             case 'team':
                 data = await dbDriver.updateTeam(obj);
                 break;
-            case 'game':
-                data = await dbDriver.updateGame(obj);
-                break;
         }
         // const data = await dbDriver.updatePlayer(player);
         if (data) {

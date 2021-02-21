@@ -25,7 +25,6 @@ class DbDriver {
 
     updatePlayer(player) { throw new Error("Method 'updatePlayer(player)' must be implemented."); }
     updateTeam(team) { throw new Error("Method 'updateTeam(team)' must be implemented."); }
-    updateGame(game) { throw new Error("Method 'updateGame(game)' must be implemented."); }
 }
 
 module.exports = DbDriver;

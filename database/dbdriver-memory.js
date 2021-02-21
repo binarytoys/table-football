@@ -397,16 +397,7 @@ class DbDriverMemory extends DbDriver {
         }
         return timeout(null);
     }
-
-    updateGame(game) {
-        console.log('EDIT game: ' + JSON.stringify(game));
-        const idx = this.GAMES.findIndex(c => c.id === game.id);
-        if (idx >= 0) {
-            this.GAMES[idx] = game;
-            return timeout(game);
-        }
-        return timeout(null);
-    }
+    
 }
 
 module.exports = DbDriverMemory;

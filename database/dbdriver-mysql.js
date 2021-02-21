@@ -1,9 +1,31 @@
 const DbDriver = require('./dbdriver-base');
 const {v4} = require('uuid')
 const mysql = require('mysql');
+const OkPacket = require("mysql");
 
 
 const dbInit = [
+
+    //
+    // Table: teams
+    // Begin
+    //
+    "CREATE TABLE IF NOT EXISTS `teams` (" +
+    "`id` varchar(50) NOT NULL PRIMARY KEY," +
+    "`name` varchar(50) NOT NULL," +
+    " UNIQUE KEY `unique_name` (`name`)" +
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+
+    "INSERT INTO `teams` VALUES ('1','Bern')",
+    "INSERT INTO `teams` VALUES ('2','Zurich')",
+    "INSERT INTO `teams` VALUES ('3','Basel')",
+    "INSERT INTO `teams` VALUES ('5','Geneva')",
+    "INSERT INTO `teams` VALUES ('6','Fribourg')",
+    "INSERT INTO `teams` VALUES ('7','Luzern')",
+    "INSERT INTO `teams` VALUES ('8','Chur')",
+    //
+    // End
+    //
 
     //
     // Table: players
@@ -14,7 +36,7 @@ const dbInit = [
     "`name` varchar(50) NOT NULL," +
     "`surname` varchar(50) NOT NULL," +
     "`team` varchar(50) NOT NULL," +
-    "UNIQUE KEY `unique_name` (`id`)" +
+    " UNIQUE KEY `full_name` (`name`, `surname`)" +
     ") ENGINE=InnoDB DEFAULT CHARSET=utf8",
 
     "INSERT INTO `players` VALUES ('1','Thomas', 'Partey', '1')",
@@ -34,27 +56,6 @@ const dbInit = [
 
 
     //
-    // Table: teams
-    // Begin
-    //
-    "CREATE TABLE IF NOT EXISTS `teams` (" +
-    "`id` varchar(50) NOT NULL PRIMARY KEY," +
-    "`name` varchar(50) NOT NULL," +
-    "UNIQUE KEY `unique_index` (`id`)" +
-    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-
-    "INSERT INTO `teams` VALUES ('1','Bern')",
-    "INSERT INTO `teams` VALUES ('2','Zurich')",
-    "INSERT INTO `teams` VALUES ('3','Basel')",
-    "INSERT INTO `teams` VALUES ('5','Geneva')",
-    "INSERT INTO `teams` VALUES ('6','Fribourg')",
-    "INSERT INTO `teams` VALUES ('7','Luzern')",
-    "INSERT INTO `teams` VALUES ('8','Chur')",
-    //
-    // End
-    //
-
-    //
     // Table: games
     // Begin
     //
@@ -62,7 +63,7 @@ const dbInit = [
     "`id` varchar(50) NOT NULL PRIMARY KEY," +
     "`home` varchar(50) NOT NULL," +
     "`away` varchar(50) NOT NULL," +
-    "UNIQUE KEY `unique_index` (`id`)" +
+    " UNIQUE KEY `unique_index` (`id`) " +
     ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
 
     "INSERT INTO `games` VALUES ('1', '1', '2')",
@@ -84,8 +85,8 @@ const dbInit = [
     "`player` varchar(50) NOT NULL," +
     "`team` varchar(50) NOT NULL," +
     "`favor` varchar(50) NOT NULL," +
-    "`tm` int(11) NOT NULL," +
-    "UNIQUE KEY `unique_index` (`id`)" +
+    "`tm` bigint NOT NULL," +
+    " UNIQUE KEY `unique_index` (`id`) " +
     ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
 
     "INSERT INTO `goals` VALUES ('1', '1', '1', '1', '1', 1000)",
@@ -104,6 +105,13 @@ const dbInit = [
     // End
     //
 ];
+
+function makeVal(value, isLast = false) {
+    if (typeof value ==='string' || value instanceof String){
+        return ('\"' + value + '\"' + (isLast ? '' : ', '));
+    }
+    return value;
+}
 
 class DbDriverMySQL extends DbDriver {
 
@@ -140,7 +148,8 @@ class DbDriverMySQL extends DbDriver {
                 connection.query(query, (err, result) => {
                     connection.release();
                     if (err) {
-                        reject(err);
+                        console.log(err);
+                        return reject(err);
                     } else {
                         resolve(result);
                     }
@@ -371,6 +380,236 @@ class DbDriverMySQL extends DbDriver {
         console.log(res);
         return res;
     }
+
+    async getGame(id) {
+        const rawGames = await this.query('SELECT games.id AS `games_id`, home, away, goals.*, h_name.name AS `name_home`, a_name.name AS `name_away`\n' +
+            'FROM `games`\n' +
+            'LEFT JOIN `goals` ON games.id = goals.game\n' +
+            'LEFT JOIN `teams` AS `h_name` ON games.home = h_name.id\n' +
+            'LEFT JOIN `teams` AS `a_name` ON games.away = a_name.id\n' +
+            'WHERE games.id = "' + id + '";');
+        console.log(rawGames);
+        const games = rawGames.reduce((acc, game) => {
+            if (game.games_id in acc) {
+                if (game.favor === game.home) {
+                    acc[game.games_id].goals.home.push({
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm});
+                } else {
+                    acc[game.games_id].goals.away.push({
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm});
+                }
+                acc[game.games_id]['result'] = `${acc[game.games_id].goals.home.length}:${acc[game.games_id].goals.away.length}`;
+            } else {
+                acc[game.games_id] = {
+                    id: game.games_id,
+                    home: { id: game.home, name: game.name_home },
+                    away: { id: game.away, name: game.name_away },
+                    result: '0:0'
+                };
+                if (game.id) {
+                    const home = game.favor === game.home ? [{
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm}] : [];
+                    const away = game.favor === game.away ? [{
+                        id: game.id,
+                        player: game.player,
+                        team: game.team,
+                        favor: game.favor,
+                        game: game.game,
+                        tm: game.tm}] : [];
+                    acc[game.games_id]['result'] = `${home.length}:${away.length}`;
+                    acc[game.games_id]['goals'] = {home, away};
+                }
+            }
+            return acc;
+        }, {});
+        const res = Object.values(games);
+        console.log(res);
+        return res[0];
+    }
+
+    async getPlayerHistory(id) {
+        const games = {};
+        const goals = await this.query('SELECT * FROM `goals` WHERE goals.player = "' + id + '";');
+        if (goals.length === 0) {
+            return [];
+        }
+        for (const goal of goals
+            .sort((a, b) => {
+                if (a.tm > b.tm) return 1;
+                if (a.tm < b.tm) return -1;
+                return 0;
+            })) {
+                if (!games[goal.game]) {
+                    const game = await this.query('SELECT games.id AS `games_id`, home, away, h_name.name AS `name_home`, a_name.name AS `name_away`\n' +
+                        'FROM `games`\n' +
+                        'LEFT JOIN `teams` AS `h_name` ON games.home = h_name.id\n' +
+                        'LEFT JOIN `teams` AS `a_name` ON games.away = a_name.id\n' +
+                        'WHERE games.id = "' + goal.game + '";');
+                    console.log(game);
+                    games[goal.game] = {home: game[0].name_home, away: game[0].name_away, goals: 1};
+                } else {
+                    games[goal.game].goals++;
+                }
+            }
+        console.log(games);
+        return games;
+    }
+
+    async addPlayer(player) {
+        player['id'] = v4();
+        return this.query('INSERT INTO `players` (`id`, `name`, `surname`, `team`) ' +
+            'VALUES ('
+            + makeVal(player.id)
+            + makeVal(player.name)
+            + makeVal(player.surname)
+            + makeVal(player.team, true)
+            + ');')
+            .then((res) => {
+                console.log(res);
+                return player;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async addTeam(team) {
+        team['id'] = v4();
+        const q = 'INSERT INTO `teams` (`id`, `name`) '
+            + 'VALUES ('
+            + makeVal(team.id)
+            + makeVal(team.name, true)
+            + ');';
+        console.log('ADD TEAM: ' + q);
+        return this.query(q)
+            .then((res) => {
+                console.log(res);
+                return team;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async addGame(game) {
+        game['id'] = v4();
+        const q = 'INSERT INTO `games` (`id`, `home`, `away`) '
+            + 'VALUES ('
+            + makeVal(game.id)
+            + makeVal(game.home.id)
+            + makeVal(game.away.id, true)
+            + ');';
+        console.log('ADD GAME: ' + q);
+        return this.query(q)
+            .then((res) => {
+                console.log(res);
+                return game;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async addGoal(goal) {
+        goal['id'] = v4();
+        const q = 'INSERT INTO `goals` (`id`, `game`, `player`, `team`, `favor`, `tm`) '
+            + 'VALUES ('
+            + makeVal(goal.id)
+            + makeVal(goal.game)
+            + makeVal(goal.player)
+            + makeVal(goal.team)
+            + makeVal(goal.favor)
+            + makeVal(goal.tm, true)
+            + ');';
+        console.log(q);
+        return this.query(q)
+            .then((res) => {
+                console.log(res);
+                return goal;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async deleteTeam(id) {
+        const q = 'DELETE FROM `teams` WHERE `id`=' + makeVal(id, true) + ';';
+        console.log('DELETE TEAM: ' + q);
+        return this.query(q)
+            .then((res) => {
+                console.log(res);
+                return res instanceof OkPacket;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async deletePlayer(id) {
+        return this.query('DELETE FROM `players` WHERE `id`=' + makeVal(id, true) + ';')
+            .then((res) => {
+                console.log(res);
+                return res instanceof OkPacket;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async updateTeam(team) {
+        const q = 'UPDATE `teams` SET `teams`.`name`=' + makeVal(team.name, true)
+            + ' WHERE `teams`.`id` = ' + makeVal(team.id, true) + ';'
+        console.log(q);
+        return this.query(q)
+            .then((res) => {
+                console.log(res);
+                return res;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
+    async updatePlayer(player) {
+        const q = 'UPDATE `players` SET '
+            + '`players`.`name`=' + makeVal(player.name)
+            + '`players`.`surname`=' + makeVal(player.surname)
+            + '`players`.`team`=' + makeVal(player.team, true)
+            + ' WHERE `players`.`id` = ' + makeVal(player.id, true) + ';'
+        console.log(q);
+        return this.query(q)
+            .then((res) => {
+                console.log(res);
+                return res;
+            })
+            .catch((res) => {
+                // console.log(res);
+                return {error: res.sqlMessage};
+            });
+    }
+
 }
 
 module.exports = DbDriverMySQL;
