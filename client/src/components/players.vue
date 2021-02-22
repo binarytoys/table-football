@@ -83,7 +83,7 @@
 
 </template>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 .history-header {
   margin: 0 16px;
   display: flex;
@@ -120,6 +120,9 @@
   font-size: 20px;
 }
 
+</style>
+
+<style lang="scss">
 .md-app-container {
   overflow-x: hidden;
 }
