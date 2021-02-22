@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <md-app>
+    <md-app style="overflow-x: hidden;">
       <md-app-toolbar class="md-primary">
         <span class="md-title">Football table</span>
       </md-app-toolbar>
