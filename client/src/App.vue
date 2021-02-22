@@ -33,7 +33,7 @@
         </md-list>
       </md-app-drawer>
 
-      <md-app-content style="height: 100%">
+      <md-app-content style="height: 100%;">
 <!--        <p>Content view: {{currentView}}</p>-->
         <template v-if="currentView === 'dashboard'">
           <dashboard-view></dashboard-view>
@@ -45,7 +45,7 @@
           <teams-view></teams-view>
         </template>
         <template v-else-if="currentView === 'players'">
-          <players-view></players-view>
+          <players-view style="overflow-x: hidden;"></players-view>
         </template>
       </md-app-content>
     </md-app>
