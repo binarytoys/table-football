@@ -1,11 +1,11 @@
 <template>
   <div class="page-container">
-    <md-app style="overflow-x: hidden;">
+    <md-app style="overflow-x: hidden !important;">
       <md-app-toolbar class="md-primary">
         <span class="md-title">Football table</span>
       </md-app-toolbar>
 
-      <md-app-drawer md-permanent="full">
+      <md-app-drawer md-permanent="full" style="width: 230px;">
         <md-toolbar class="md-transparent" md-elevation="0">
           Navigation
         </md-toolbar>
@@ -33,7 +33,7 @@
         </md-list>
       </md-app-drawer>
 
-      <md-app-content style="height: 100%;">
+      <md-app-content style="height: 100%;overflow-x: hidden !important;">
 <!--        <p>Content view: {{currentView}}</p>-->
         <template v-if="currentView === 'dashboard'">
           <dashboard-view></dashboard-view>
@@ -52,7 +52,7 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .md-app {
   height: 100vh;
   border: 1px solid rgba(#000, .12);
@@ -61,6 +61,10 @@
 .md-drawer {
   width: 230px;
   max-width: calc(100vw - 125px);
+}
+
+.md-app-container {
+  overflow-x: hidden !important;
 }
 </style>
 

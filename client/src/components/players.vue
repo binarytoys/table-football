@@ -56,7 +56,7 @@
         </md-table-row>
       </md-table>
 
-      <md-drawer class="md-right" :md-active.sync="isHistory">
+      <md-drawer class="md-right" style="width: 400px; max-width: calc(100vw - 125px)" :md-active.sync="isHistory">
         <md-toolbar class="md-transparent" md-elevation="0">
           <span class="md-title">Games history for {{historyFor.name}} {{historyFor.surname}}</span>
         </md-toolbar>
@@ -122,11 +122,13 @@
 
 </style>
 
+<!--
 <style lang="scss">
 .md-app-container {
   overflow-x: hidden;
 }
 </style>
+-->
 
 <script>
 import Loader from "@/components/loader";
