@@ -100,7 +100,7 @@ const dbInit = [
     "INSERT INTO `goals` VALUES ('9', '2', '10', '3', '3', 1800)",
     "INSERT INTO `goals` VALUES ('10', '3', '8', '5', '5', 1900)",
     "INSERT INTO `goals` VALUES ('11', '4', '6', '7', '7', 2000)",
-    "INSERT INTO `goals` VALUES ('12', '4', '7', '8', '8', 1000)",
+    "INSERT INTO `goals` VALUES ('12', '4', '7', '8', '8', 3000)",
     //
     // End
     //
@@ -170,23 +170,25 @@ class DbDriverMySQL extends DbDriver {
 
         const connection = mysql.createConnection(dbCredentials);
 
-        let dbCreate = "CREATE DATABASE IF NOT EXISTS " + dbName;
-        connection.query(dbCreate, function (err, result){
-            connection.destroy();
+        const dbCreate = "CREATE DATABASE IF NOT EXISTS " + dbName;
 
-            if (err) {
-                err.message = 'query[' + dbCreate + '] ' + err.message;
-                console.log(err);
-                return;
-            }
+        return new Promise((resolve, reject) => {
+            connection.query(dbCreate, function (err, result) {
+                connection.destroy();
 
-            dbCredentials['database'] = dbName;
+                if (err) {
+                    err.message = 'query[' + dbCreate + '] ' + err.message;
+                    console.log(err);
+                    reject(err);
+                }
 
-            let connection2 = mysql.createConnection(dbCredentials);
+                dbCredentials['database'] = dbName;
 
-            (async ()=> {
+                const connection2 = mysql.createConnection(dbCredentials);
+
+                const reqs = [];
                 for (const query of dbInit) {
-                    const res = await ((query) => {
+                    const res = ((query) => {
                         return new Promise((res, rej) => {
                             connection2.query(query, (err, result) => {
                                 if (err) {
@@ -198,9 +200,11 @@ class DbDriverMySQL extends DbDriver {
                             });
                         });
                     })(query);
+                    reqs.push(res);
                 }
-            })();
-        });
+                Promise.all(reqs).then(() => {resolve(true)});
+            });
+        })
     }
 
     async init() {
@@ -224,6 +228,7 @@ class DbDriverMySQL extends DbDriver {
                     }
                     if (result.length === 0) {
                         (async ()=>{
+                            console.log('Create new Database');
                             resolve(await this.makeVersionZero());
                         })();
                     }
