@@ -14,7 +14,7 @@
 
         <md-table-row slot="md-table-row" slot-scope="{ item }">
   <!--        <md-table-cell md-label="ID" md-numeric>{{ item.id }}</md-table-cell>-->
-          <md-table-cell md-label="Team/Player name" md-sort-by="name">{{ item.name }}</md-table-cell>
+          <md-table-cell md-label="Team name" md-sort-by="name">{{ item.name }}</md-table-cell>
           <md-table-cell md-label="Games" md-sort-by="games" md-numeric>{{ item.games }}</md-table-cell>
           <md-table-cell md-label="Wins" md-sort-by="wins" md-numeric>{{ item.wins }}</md-table-cell>
           <md-table-cell md-label="Loses" md-sort-by="loses" md-numeric>{{ item.loses }}</md-table-cell>
