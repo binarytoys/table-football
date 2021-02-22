@@ -65,10 +65,14 @@
           <loader style="flex: 1"></loader>
         </template>
         <template v-else>
+          <div class="history-header">
+            <span style="align-items: center; flex: 1;text-align: center;">Game</span>
+            <span style="align-items: center; flex: 1;text-align: center;">Goals</span>
+          </div>
           <md-list>
             <md-list-item v-for="game of historyGames" :key="game.home" style="display: flex; justify-content: space-between">
-              <span class="md-list-item-text">{{game.home}} : {{game.away}}</span>
-              <span class="md-list-item-text">{{game.goals}}</span>
+              <span class="md-list-item-text history-line">{{game.home}} : {{game.away}}</span>
+              <span class="md-list-item-text history-line" style="align-items: center; font-weight: 600">{{game.goals}}</span>
             </md-list-item>
           </md-list>
         </template>
@@ -80,6 +84,15 @@
 </template>
 
 <style lang="scss" scoped>
+.history-header {
+  margin: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  border-bottom: 1px solid #ff9800;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -101,6 +114,10 @@
 .action-cell {
   display: flex;
   flex-direction: row;
+}
+
+.history-line {
+  font-size: 20px;
 }
 </style>
 
